@@ -485,10 +485,10 @@ You will also create a new `Sale` clustered columnstore table within the `wwi_st
 
     ![The run button is highlighted in the query toolbar.](media/synapse-studio-query-toolbar-run.png "Run")
 
-6. In the query window, replace the script with the following to create the heap table:
+6. In the query window, replace the script with the following to create the heap table (replace `SUFFIX` with your **student ID**):
 
     ```sql
-    CREATE TABLE [wwi_staging].[SaleHeap]
+    CREATE TABLE [wwi_staging].[SaleHeap_SUFFIX]
     ( 
         [TransactionId] [uniqueidentifier]  NOT NULL,
         [CustomerId] [int]  NOT NULL,
@@ -511,10 +511,10 @@ You will also create a new `Sale` clustered columnstore table within the `wwi_st
 
 7. Select **Run** from the toolbar menu to execute the SQL command.
 
-8. In the query window, replace the script with the following to create the `Sale` table in the `wwi_staging` schema for load comparisons:
+8. In the query window, replace the script with the following to create the `Sale` table in the `wwi_staging` schema for load comparisons (replace `SUFFIX` with your **student ID**):
 
     ```sql
-    CREATE TABLE [wwi_staging].[Sale]
+    CREATE TABLE [wwi_staging].[Sale_SUFFIX]
     (
         [TransactionId] [uniqueidentifier]  NOT NULL,
         [CustomerId] [int]  NOT NULL,
@@ -549,15 +549,18 @@ PolyBase requires the following elements:
 - An external file format for Parquet files
 - An external table that defines the schema for the files, as well as the location, data source, and file format
 
-1. In the query window, replace the script with the following to create the external data source. Be sure to replace `<PrimaryStorage`>` with the default storage account name for your workspace:
+1. In the query window, replace the script with the following to create the external data source. Be sure to replace `<PrimaryStorage>` with the default storage account name for your workspace:
 
     ```sql
     -- Replace <PrimaryStorage> with the workspace default storage account name.
-    CREATE EXTERNAL DATA SOURCE ABSS
-    WITH
-    ( TYPE = HADOOP,
-        LOCATION = 'abfss://wwi-02@<PrimaryStorage>.dfs.core.windows.net'
-    );
+    IF NOT EXISTS (SELECT * FROM sys.external_data_sources where name = 'ABSS')
+    BEGIN
+        CREATE EXTERNAL DATA SOURCE ABSS
+        WITH
+        ( TYPE = HADOOP,
+            LOCATION = 'abfss://wwi-02@<PrimaryStorage>.dfs.core.windows.net'
+        );
+    END
     ```
 
 2. Select **Run** from the toolbar menu to execute the SQL command.
@@ -565,36 +568,45 @@ PolyBase requires the following elements:
 3. In the query window, replace the script with the following to create the external file format and external data table. Notice that we defined `TransactionId` as an `nvarchar(36)` field instead of `uniqueidentifier`. This is because external tables do not currently support `uniqueidentifier` columns:
 
     ```sql
-    CREATE EXTERNAL FILE FORMAT [ParquetFormat]
-    WITH (
-        FORMAT_TYPE = PARQUET, 
-        DATA_COMPRESSION = 'org.apache.hadoop.io.compress.SnappyCodec'
-    )
+    IF NOT EXISTS (SELECT * FROM sys.external_file_formats where name = 'ParquetFormat')
+    BEGIN
+        CREATE EXTERNAL FILE FORMAT [ParquetFormat]
+        WITH (  
+            FORMAT_TYPE = PARQUET,  
+            DATA_COMPRESSION = 'org.apache.hadoop.io.compress.SnappyCodec'  
+        );
+    END
     GO
 
-    CREATE SCHEMA [wwi_external];
+    IF NOT EXISTS (SELECT * FROM sys.schemas where name = 'external')
+    BEGIN
+        CREATE SCHEMA [external]
+    END
     GO
 
-    CREATE EXTERNAL TABLE [wwi_external].Sales
-        (
-            [TransactionId] [nvarchar](36)  NOT NULL,
-            [CustomerId] [int]  NOT NULL,
-            [ProductId] [smallint]  NOT NULL,
-            [Quantity] [smallint]  NOT NULL,
-            [Price] [decimal](9,2)  NOT NULL,
-            [TotalAmount] [decimal](9,2)  NOT NULL,
-            [TransactionDate] [int]  NOT NULL,
-            [ProfitAmount] [decimal](9,2)  NOT NULL,
-            [Hour] [tinyint]  NOT NULL,
-            [Minute] [tinyint]  NOT NULL,
-            [StoreId] [smallint]  NOT NULL
-        )
-    WITH
-        (
-            LOCATION = '/sale-small%2FYear%3D2019',  
-            DATA_SOURCE = ABSS,
-            FILE_FORMAT = [ParquetFormat]  
-        )  
+    IF NOT EXISTS (SELECT * FROM sys.external_tables where name = 'Sales')
+    BEGIN
+        CREATE EXTERNAL TABLE [wwi_external].Sales
+            (
+                [TransactionId] [nvarchar](36)  NOT NULL,
+                [CustomerId] [int]  NOT NULL,
+                [ProductId] [smallint]  NOT NULL,
+                [Quantity] [smallint]  NOT NULL,
+                [Price] [decimal](9,2)  NOT NULL,
+                [TotalAmount] [decimal](9,2)  NOT NULL,
+                [TransactionDate] [int]  NOT NULL,
+                [ProfitAmount] [decimal](9,2)  NOT NULL,
+                [Hour] [tinyint]  NOT NULL,
+                [Minute] [tinyint]  NOT NULL,
+                [StoreId] [smallint]  NOT NULL
+            )
+        WITH
+            (
+                LOCATION = '/sale-small%2FYear%3D2019',  
+                DATA_SOURCE = ABSS,
+                FILE_FORMAT = [ParquetFormat]  
+            )
+    END
     GO
     ```
 
@@ -602,20 +614,20 @@ PolyBase requires the following elements:
 
 4. Select **Run** from the toolbar menu to execute the SQL command.
 
-5. In the query window, replace the script with the following to load the data into the `wwi_staging.SalesHeap` table:
+5. In the query window, replace the script with the following to load the data into the `wwi_staging.SaleHeap_SUFFIX` table (replace `SUFFIX` with your **student ID**):
 
     ```sql
-    INSERT INTO [wwi_staging].[SaleHeap]
+    INSERT INTO [wwi_staging].[SaleHeap_SUFFIX]
     SELECT *
     FROM [wwi_external].[Sales]
     ```
 
 6. Select **Run** from the toolbar menu to execute the SQL command. It will take a few minutes to execute this command. **Take note** of how long it took to execute this query.
 
-7. In the query window, replace the script with the following to see how many rows were imported:
+7. In the query window, replace the script with the following to see how many rows were imported (replace `SUFFIX` with your **student ID**):
 
     ```sql
-    SELECT COUNT_BIG(1) FROM wwi_staging.SaleHeap(nolock)
+    SELECT COUNT_BIG(1) FROM wwi_staging.SaleHeap_SUFFIX(nolock)
     ```
 
 8. Select **Run** from the toolbar menu to execute the SQL command. You should see a result of `339507246`.
@@ -624,14 +636,14 @@ PolyBase requires the following elements:
 
 Now let's see how to perform the same load operation with the COPY statement.
 
-1. In the query window, replace the script with the following to truncate the heap table and load data using the COPY statement. Be sure to replace `<PrimaryStorage`>` with the default storage account name for your workspace:
+1. In the query window, replace the script with the following to truncate the heap table and load data using the COPY statement. Be sure to replace `<PrimaryStorage>` with the default storage account name for your workspace (replace `SUFFIX` with your **student ID**):
 
     ```sql
-    TRUNCATE TABLE wwi_staging.SaleHeap;
+    TRUNCATE TABLE wwi_staging.SaleHeap_SUFFIX;
     GO
 
-    -- Replace <PrimaryStorage> with the workspace default storage account name.
-    COPY INTO wwi_staging.SaleHeap
+    -- Replace <PrimaryStorage> with the workspace default storage account name and SUFFIX with your student ID.
+    COPY INTO wwi_staging.SaleHeap_SUFFIX
     FROM 'https://<PrimaryStorage>.dfs.core.windows.net/wwi-02/sale-small%2FYear%3D2019'
     WITH (
         FILE_TYPE = 'PARQUET',
@@ -642,10 +654,10 @@ Now let's see how to perform the same load operation with the COPY statement.
 
 2. Select **Run** from the toolbar menu to execute the SQL command. It takes a few minutes to execute this command. **Take note** of how long it took to execute this query.
 
-3. In the query window, replace the script with the following to see how many rows were imported:
+3. In the query window, replace the script with the following to see how many rows were imported (replace `SUFFIX` with your **student ID**):
 
     ```sql
-    SELECT COUNT_BIG(1) FROM wwi_staging.SaleHeap(nolock)
+    SELECT COUNT_BIG(1) FROM wwi_staging.SaleHeap_SUFFIX(nolock)
     ```
 
 4. Select **Run** from the toolbar menu to execute the SQL command. You should see a result of `339507246`.
@@ -656,11 +668,11 @@ Do the number of rows match for both load operations? Which activity was fastest
 
 For both of the load operations above, we inserted data into the heap table. What if we inserted into the clustered columnstore table instead? Is there really a performance difference? Let's find out!
 
-1. In the query window, replace the script with the following to load data into the clustered columnstore `Sale` table using the COPY statement. Be sure to replace `<PrimaryStorage`>` with the default storage account name for your workspace:
+1. In the query window, replace the script with the following to load data into the clustered columnstore `Sale` table using the COPY statement. Be sure to replace `<PrimaryStorage>` with the default storage account name for your workspace (replace `SUFFIX` with your **student ID**):
 
     ```sql
-    -- Replace <PrimaryStorage> with the workspace default storage account name.
-    COPY INTO wwi_staging.Sale
+    -- Replace <PrimaryStorage> with the workspace default storage account name and replace SUFFIX with your student ID.
+    COPY INTO wwi_staging.Sale_SUFFIX
     FROM 'https://<PrimaryStorage>.dfs.core.windows.net/wwi-02/sale-small%2FYear%3D2019'
     WITH (
         FILE_TYPE = 'PARQUET',
@@ -671,10 +683,10 @@ For both of the load operations above, we inserted data into the heap table. Wha
 
 2. Select **Run** from the toolbar menu to execute the SQL command. It takes a few minutes to execute this command. **Take note** of how long it took to execute this query.
 
-3. In the query window, replace the script with the following to see how many rows were imported:
+3. In the query window, replace the script with the following to see how many rows were imported (replace `SUFFIX` with your **student ID**):
 
     ```sql
-    SELECT COUNT_BIG(1) FROM wwi_staging.Sale(nolock)
+    SELECT COUNT_BIG(1) FROM wwi_staging.Sale_SUFFIX(nolock)
     ```
 
 4. Select **Run** from the toolbar menu to execute the SQL command.
@@ -700,10 +712,10 @@ WWI has a nightly process that ingests regional sales data from a partner analyt
 
 The data has the following fields: `Date`, `NorthAmerica`, `SouthAmerica`, `Europe`, `Africa`, and `Asia`. They must process this data and store it in Synapse Analytics.
 
-1. In the query window, replace the script with the following to create the `DailySalesCounts` table and load data using the COPY statement. Be sure to replace `<PrimaryStorage`>` with the default storage account name for your workspace:
+1. In the query window, replace the script with the following to create the `DailySalesCounts` table and load data using the COPY statement. Be sure to replace `<PrimaryStorage>` with the default storage account name for your workspace (replace `SUFFIX` with your **student ID**):
 
     ```sql
-    CREATE TABLE [wwi_staging].DailySalesCounts
+    CREATE TABLE [wwi_staging].DailySalesCounts_SUFFIX
         (
             [Date] [int]  NOT NULL,
             [NorthAmerica] [int]  NOT NULL,
@@ -714,8 +726,8 @@ The data has the following fields: `Date`, `NorthAmerica`, `SouthAmerica`, `Euro
         )
     GO
 
-    -- Replace <PrimaryStorage> with the workspace default storage account name.
-    COPY INTO wwi_staging.DailySalesCounts
+    -- Replace <PrimaryStorage> with the workspace default storage account name and SUFFIX with your student ID.
+    COPY INTO wwi_staging.DailySalesCounts_SUFFIX
     FROM 'https://<PrimaryStorage>.dfs.core.windows.net/wwi-02/campaign-analytics/dailycounts.txt'
     WITH (
         FILE_TYPE = 'CSV',
@@ -729,10 +741,10 @@ The data has the following fields: `Date`, `NorthAmerica`, `SouthAmerica`, `Euro
 
 2. Select **Run** from the toolbar menu to execute the SQL command.
 
-3. In the query window, replace the script with the following to view the imported data:
+3. In the query window, replace the script with the following to view the imported data (replace `SUFFIX` with your **student ID**):
 
     ```sql
-    SELECT * FROM [wwi_staging].DailySalesCounts
+    SELECT * FROM [wwi_staging].DailySalesCounts_SUFFIX
     ORDER BY [Date] DESC
     ```
 
@@ -746,37 +758,45 @@ The data has the following fields: `Date`, `NorthAmerica`, `SouthAmerica`, `Euro
 
 Let's try this same operation using PolyBase.
 
-1. In the query window, replace the script with the following to create a new external file format, external table, and load data using PolyBase:
+1. In the query window, replace the script with the following to create a new external file format, external table, and load data using PolyBase (replace `SUFFIX` with your **student ID**):
 
     ```sql
-    CREATE EXTERNAL FILE FORMAT csv_dailysales
-    WITH (
-        FORMAT_TYPE = DELIMITEDTEXT,
-        FORMAT_OPTIONS (
-            FIELD_TERMINATOR = '.',
-            DATE_FORMAT = '',
-            USE_TYPE_DEFAULT = False
-        )
-    );
+    IF NOT EXISTS (SELECT * FROM sys.external_file_formats where name = 'csv_dailysales')
+    BEGIN
+        CREATE EXTERNAL FILE FORMAT csv_dailysales
+        WITH (
+            FORMAT_TYPE = DELIMITEDTEXT,
+            FORMAT_OPTIONS (
+                FIELD_TERMINATOR = '.',
+                DATE_FORMAT = '',
+                USE_TYPE_DEFAULT = False
+            )
+        );
+    END
     GO
 
-    CREATE EXTERNAL TABLE [wwi_external].DailySalesCounts
-        (
-            [Date] [int]  NOT NULL,
-            [NorthAmerica] [int]  NOT NULL,
-            [SouthAmerica] [int]  NOT NULL,
-            [Europe] [int]  NOT NULL,
-            [Africa] [int]  NOT NULL,
-            [Asia] [int]  NOT NULL
-        )
-    WITH
-        (
-            LOCATION = '/campaign-analytics/dailycounts.txt',  
-            DATA_SOURCE = ABSS,
-            FILE_FORMAT = csv_dailysales
-        )  
+    IF NOT EXISTS (SELECT * FROM sys.external_tables where name = 'DailySalesCounts')
+    BEGIN
+        CREATE EXTERNAL TABLE [wwi_external].DailySalesCounts
+            (
+                [Date] [int]  NOT NULL,
+                [NorthAmerica] [int]  NOT NULL,
+                [SouthAmerica] [int]  NOT NULL,
+                [Europe] [int]  NOT NULL,
+                [Africa] [int]  NOT NULL,
+                [Asia] [int]  NOT NULL
+            )
+        WITH
+            (
+                LOCATION = '/campaign-analytics/dailycounts.txt',  
+                DATA_SOURCE = ABSS,
+                FILE_FORMAT = csv_dailysales
+            )
+    END
     GO
-    INSERT INTO [wwi_staging].[DailySalesCounts]
+
+    -- Replace SUFFIX with your student ID.
+    INSERT INTO [wwi_staging].[DailySalesCounts_SUFFIX]
     SELECT *
     FROM [wwi_external].[DailySalesCounts]
     ```
