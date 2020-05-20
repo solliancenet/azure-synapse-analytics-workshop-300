@@ -54,11 +54,13 @@ For the remainder of this guide, the following terms will be used for various AS
 
 Our data sources for labs 1 and 2 include files stored in ADLS Gen2 and Azure Cosmos DB. The linked service for ADLS Gen2 already exists as it is the primary ADLS Gen2 account for the workspace.
 
+> **Important note:** Throughout the labs, you will be asked to replace `SUFFIX` with your student ID value. This ensures unique names for any artifacts you create, in case you are sharing a Synapse Analytics workspace with others. Your student ID is the set of numbers at the end of your assigned username. For example, if your username is `odl_user_104871`, your student ID is `104871`.
+
 1. Open Synapse Analytics Studio, and then navigate to the **Manage** hub.
 
     ![The Manage menu item is highlighted.](media/manage-hub.png "Manage hub")
 
-2. Open **Linked services** and create a new linked service to the Azure Cosmos DB account for the lab. Name the linked service after the name of the Azure Cosmos DB account and set the **Database name** value to `CustomerProfile`.
+2. Open **Linked services** and create a new linked service to the Azure Cosmos DB account for the lab. Name the linked service `asacosmosdb01_SUFFIX` (where `SUFFIX` is your **student ID**) and set the **Database name** value to `CustomerProfile`.
 
     ![New Azure Cosmos DB linked service.](media/create-cosmos-db-linked-service.png "New linked service")
 
@@ -74,7 +76,7 @@ Our data sources for labs 1 and 2 include files stored in ADLS Gen2 and Azure Co
 
 3. Create a new **Azure Cosmos DB (SQL API)** dataset with the following characteristics:
 
-    - **Name**: Enter `asal400_customerprofile_cosmosdb`.
+    - **Name**: Enter `asal400_customerprofile_cosmosdb_SUFFIX` (where `SUFFIX` is your **student ID**).
     - **Linked service**: Select the Azure Cosmos DB linked service.
     - **Collection**: Select `OnlineUserProfile01`.
 
@@ -94,7 +96,7 @@ Our data sources for labs 1 and 2 include files stored in ADLS Gen2 and Azure Co
 
 7. Create a new **Azure Data Lake Storage Gen2** dataset with the **Parquet** format type with the following characteristics:
 
-    - **Name**: Enter `asal400_sales_adlsgen2`.
+    - **Name**: Enter `asal400_sales_adlsgen2_SUFFIX` (where `SUFFIX` is your **student ID**).
     - **Linked service**: Select the `asadatalakeXX` linked service that already exists.
     - **File path**: Browse to the `wwi-02/sale-small` path.
     - **Import schema**: Select `From connection/store`.
@@ -103,7 +105,7 @@ Our data sources for labs 1 and 2 include files stored in ADLS Gen2 and Azure Co
 
 8. Create a new **Azure Data Lake Storage Gen2** dataset with the **JSON** format type with the following characteristics:
 
-    - **Name**: Enter `asal400_ecommerce_userprofiles_source`.
+    - **Name**: Enter `asal400_ecommerce_userprofiles_source_SUFFIX` (where `SUFFIX` is your **student ID**).
     - **Linked service**: Select the `asadatalakeXX` linked service that already exists.
     - **File path**: Browse to the `wwi-02/online-user-profiles-02` path.
     - **Import schema**: Select `From connection/store`.
@@ -788,127 +790,3 @@ Why is this? According to [PolyBase documentation](https://docs.microsoft.com/sq
 > The row delimiter in delimited-text files must be supported by Hadoop's LineRecordReader. That is, it must be either `\r`, `\n`, or `\r\n`. These delimiters are not user-configurable.
 
 This is an example of where COPY's flexibility gives it an advantage over PolyBase.
-
-## Exercise 4: Import sales data with COPY using a pipeline
-
-Now that WWI has gone through the process of loading data using PolyBase and COPY via T-SQL statements, it's time for them to experiment with loading sales data through a Synapse pipeline.
-
-When moving data into a data warehouse, there is oftentimes a level of orchestration involved, coordinating movement from one or more data sources and sometimes some level of transformation. The transformation step can occur during (extract-transform-load - ETL) or after (extract-load-transform - ELT) data movement. Any modern data platform must provide a seamless experience for all the typical data wrangling actions like extractions, parsing, joining, standardizing, augmenting, cleansing, consolidating, and filtering. Azure Synapse Analytics provides two significant categories of features - data flows and data orchestrations (implemented as pipelines).
-
-In this exercise, we will focus on the orchestration aspect. Lab 2 will focus more on the transformation (data flow) pipelines. You will create a new pipeline to import a large Parquet file, following best practices to improve the load performance.
-
-### Task 1: Configure workload management classification
-
-When loading a large amount of data, it is best to run only one load job at a time for fasted performance. If this isn't possible, run a minimal number of loads concurrently. If you expect a large loading job, consider scaling up your SQL pool before the load.
-
-Be sure that you allocate enough memory to the pipeline session. To do this, increase the resource class of a user which has permissions to rebuild the index on this table to the recommended minimum.
-
-To run loads with appropriate compute resources, create loading users designated for running loads. Assign each loading user to a specific resource class or workload group. To run a load, sign in as one of the loading users, and then run the load. The load runs with the user's resource class.
-
-1. In the query window, replace the script with the following to create a workload group, `BigDataLoad`, that uses workload isolation by reserving a minimum of 50% resources with a cap of 100%:
-
-    ```sql
-    IF NOT EXISTS (SELECT * FROM sys.workload_management_workload_classifiers WHERE group_name = 'BigDataLoad')
-    BEGIN
-        CREATE WORKLOAD GROUP BigDataLoad WITH  
-        (
-            MIN_PERCENTAGE_RESOURCE = 50 -- integer value
-            ,REQUEST_MIN_RESOURCE_GRANT_PERCENT = 25 --  (guaranteed a minimum of 4 concurrency)
-            ,CAP_PERCENTAGE_RESOURCE = 100
-        );
-    END
-    ```
-
-2. Select **Run** from the toolbar menu to execute the SQL command.
-
-3. In the query window, replace the script with the following to create a new workload classifier, `HeavyLoader` that assigns the `asa.sql.import01` user we created in your environment to the `BigDataLoad` workload group. At the end, we select from `sys.workload_management_workload_classifiers` to view all classifiers, including the one we just created:
-
-    ```sql
-    IF NOT EXISTS (SELECT * FROM sys.workload_management_workload_classifiers WHERE [name] = 'HeavyLoader')
-    BEGIN
-        CREATE WORKLOAD Classifier HeavyLoader WITH
-        (
-            Workload_Group ='BigDataLoad',
-            MemberName='asa.sql.import01',
-            IMPORTANCE = HIGH
-        );
-    END
-
-    SELECT * FROM sys.workload_management_workload_classifiers
-    ```
-
-4. Select **Run** from the toolbar menu to execute the SQL command. You should see the new classifier in the query results:
-
-    ![The new workload classifier is highlighted.](media/workload-classifiers-query-results.png "Workload Classifiers query results")
-
-5. Navigate to the **Manage** hub.
-
-    ![The Manage menu item is highlighted.](media/manage-hub.png "Manage hub")
-
-6. Locate and select a linked service named `sqlpool01_import01`. Notice that the user name for the SQL Pool connection is the `asa.sql.import01` user we added to the `HeavyLoader` classifier. We will use this linked service in our new pipeline to reserve resources for the data load activity.
-
-    ![The user name is highlighted.](media/sqlpool01-import01-linked-service.png "Linked service")
-
-### Task 2: Create pipeline with copy activity
-
-1. Navigate to the **Orchestrate** hub.
-
-    ![The Orchestrate hub is highlighted.](media/orchestrate-hub.png "Orchestrate hub")
-
-2. Select + then **Pipeline** to create a new pipeline.
-
-    ![The new pipeline context menu item is selected.](media/new-pipeline.png "New pipeline")
-
-3. In the **General** tab for the new pipeline, enter the following **Name**: `ASAL400 - Copy December Sales`.
-
-4. Expand **Move & transform** within the Activities list, then drag the **Copy data** activity onto the pipeline canvas.
-
-    ![Copy data is dragged to the canvas](media/pipeline-copy-sales-drag-copy-data.png "Pipeline canvas")
-
-5. Select the **Copy data** activity on the canvas and set the **Name** to `Copy Sales`.
-
-6. Select the **Source** tab, then select **+ New** next to `Source dataset`.
-
-7. Select the **Azure Data Lake Storage Gen2** data store, then select **Continue**.
-
-8. Choose the **Parquet** format, then select **Continue**.
-
-9. In the properties, set the name to **asal400_december_sales** and select the **asadatalakeNNNNNN** linked service. Browse to the `wwi-02/campaign-analytics/sale-20161230-snappy.parquet` file location, select **From sample file** for schema import. [Download this sample file](https://github.com/solliancenet/azure-synapse-analytics-workshop-400/blob/master/day-01/media/sale-small-20100102-snappy.parquet?raw=true) to your computer, then browse to it in the **Select file** field. Select **OK**.
-
-    ![The properties are displayed.](media/pipeline-copy-sales-source-dataset.png "Dataset properties")
-
-10. Select the **Sink** tab, then select **+ New** next to `Sink dataset`.
-
-11. Select the **Azure Synapse Analytics** data store, then select **Continue**.
-
-12. In the properties, set the name to `asal400_saleheap_asa` and select the **sqlpool01_import01** linked service that connects to Synapse Analytics with the `asa.sql.import01` user. For the table name, scroll the Table name dropdown and choose the **wwi_staging.SaleHeap** table then select **OK**.
-
-    ![The properties are displayed.](media/pipeline-copy-sales-sink-dataset.png "Dataset properties")
-
-13. In the **Sink** tab, select the **Copy command** copy method and enter the following in the pre-copy script to clear the table before import: `TRUNCATE TABLE wwi_staging.SaleHeap`.
-
-    ![The described settings are displayed.](media/pipeline-copy-sales-sink-settings.png "Sink")
-
-14. Select the **Mapping** tab and use **+ New mapping** to create mappings for each source and destination field.
-
-    ![The mapping is displayed.](media/pipeline-copy-sales-sink-mapping.png "Mapping")
-
-15. Select **Settings** and set the **Data integration unit** to `8`. This is required due to the large size of the source Parquet file.
-
-    ![The data integration unit value is set to 32.](media/pipeline-copy-sales-settings.png "Settings")
-
-16. Select **Publish all** to save your new resources.
-
-    ![Publish all is highlighted.](media/publish-all-1.png "Publish all")
-
-17. Select **Add trigger**, then **Trigger now**. Select **OK** in the pipeline run trigger to begin.
-
-    ![Trigger now.](media/copy-pipeline-trigger-now.png "Trigger now")
-
-18. Navigate to the **Monitor** hub.
-
-    ![The Monitor hub menu item is selected.](media/monitor-hub.png "Monitor hub")
-
-19. Select **Pipeline Runs**. You can see the status of your pipeline run here. It will take some time to complete, so might want to return to check this status before you start the next lab. Note that you may need to refresh the view. Once the pipeline run is complete, you can query the `wwi_staging.SaleHeap` table to view the imported data.
-
-    ![The completed pipeline run is displayed.](media/pipeline-copy-sales-pipeline-run.png "Pipeline runs")
