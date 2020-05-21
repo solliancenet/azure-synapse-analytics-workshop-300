@@ -130,9 +130,9 @@ When you query Parquet files using Synapse SQL Serverless, you can explore the d
 
     ![The Data menu item is highlighted.](media/data-hub.png "Data hub")
 
-2. Expand **Storage accounts**. Expand the `asadatalakeXX` primary ADLS Gen2 account and select `wwi-02`.
+2. Select the **Linked** tab, and then expand **Storage accounts**. Expand the `asadatalakeXX` primary ADLS Gen2 account and select `wwi-02`.
 
-3. Navigate to the `sale-small/Year=2016/Quarter=Q4/Month=12/Day=20161231` folder. Right-click on the `sale-small-20161231-snappy.parquet` file, select **New SQL script**, then **Select TOP 100 rows**.
+3. Navigate to the `sale-small/Year=2017/Quarter=Q4/Month=12/Day=20161231` folder. Right-click on the `sale-small-20171231-snappy.parquet` file, select **New SQL script**, then **Select TOP 100 rows**.
 
     ![The Data hub is displayed with the options highlighted.](media/data-hub-parquet-select-rows.png "Select TOP 100 rows")
 
@@ -145,12 +145,12 @@ When you query Parquet files using Synapse SQL Serverless, you can explore the d
     ```sql
     SELECT
         TransactionDate, ProductId,
-            CAST(SUM(ProfitAmount) AS decimal(18,2)) AS [(sum) Profit],
-            CAST(AVG(ProfitAmount) AS decimal(18,2)) AS [(avg) Profit],
-            SUM(Quantity) AS [(sum) Quantity]
+        CAST(SUM(ProfitAmount) AS decimal(18,2)) AS [(sum) Profit],
+        CAST(AVG(ProfitAmount) AS decimal(18,2)) AS [(avg) Profit],
+        SUM(Quantity) AS [(sum) Quantity]
     FROM
         OPENROWSET(
-            BULK 'https://asadatalake01.dfs.core.windows.net/wwi-02/sale-small/Year=2016/Quarter=Q4/Month=12/Day=20161231/sale-small-20161231-snappy.parquet',
+            BULK 'https://asadatalake01.dfs.core.windows.net/wwi-02/sale-small/Year=2017/Quarter=Q4/Month=12/Day=20171231/sale-small-20171231-snappy.parquet',
             FORMAT='PARQUET'
         ) AS [r] GROUP BY r.TransactionDate, r.ProductId;
     ```
@@ -179,7 +179,7 @@ When you query Parquet files using Synapse SQL Serverless, you can explore the d
 
 ### Task 2: Query sales Parquet data with Azure Synapse Spark
 
-1. Navigate to the **Data** hub, browse to the data lake storage account folder `sale-small/Year=2016/Quarter=Q4/Month=12/Day=20161231` if needed, then right-click the Parquet file and select New notebook.
+1. Navigate to the **Data** hub, browse to the data lake storage account folder `sale-small/Year=2017/Quarter=Q4/Month=12/Day=20171231` if needed, then right-click the Parquet file and select New notebook.
 
     ![The Parquet file is displayed with the New notebook menu item highlighted.](media/new-spark-notebook-sales.png "New notebook")
 
@@ -478,7 +478,11 @@ You will also create a new `Sale` clustered columnstore table within the `wwi_st
 4. In the query window, replace the script with the following to create the `wwi_staging` schema:
 
     ```sql
-    CREATE SCHEMA [wwi_staging]
+    IF NOT EXISTS (SELECT * FROM sys.schemas where name = 'wwi_staging')
+    BEGIN
+        EXEC sp_executesql N'CREATE SCHEMA wwi_staging'
+    END
+    GO
     ```
 
 5. Select **Run** from the toolbar menu to execute the SQL command.
@@ -578,9 +582,9 @@ PolyBase requires the following elements:
     END
     GO
 
-    IF NOT EXISTS (SELECT * FROM sys.schemas where name = 'external')
+    IF NOT EXISTS (SELECT * FROM sys.schemas where name = 'wwi_external')
     BEGIN
-        CREATE SCHEMA [external]
+        EXEC sp_executesql N'CREATE SCHEMA wwi_external'
     END
     GO
 
