@@ -85,7 +85,6 @@ if ($dataLakeAccount -eq $null) {
                         "sale-small\Year=2019" = "folder path"
                         "sale-small\Year=2017\Quarter=Q4\Month=12\Day=20171231\sale-small-20171231-snappy.parquet" = "file path"
                         "campaign-analytics\dailycounts.txt" = "file path"
-                        "campaign-analytics\sale-20161230-snappy.parquet" = "file path"
                         "campaign-analytics\campaignanalytics.csv" = "file path"
                 }
         

@@ -14,10 +14,9 @@ Artifact Name | Artifact Type | Notes
 `wwi-02` | ADLS Gen2 file system in `asadatalakeNNNNNN` |
 `wwi-02\sale-small` | Folder path in `asadatalakeNNNNNN` |
 `wwi-02\online-user-profiles-02` | Folder path in `asadatalakeNNNNNN` |
-`wwi-02\sale-small\Year=2016\Quarter=Q4\Month=12\Day=20161231\sale-small-20161231-snappy.parquet` | File path in `asadatalakeNNNNNN`
+`wwi-02\sale-small\Year=2017\Quarter=Q4\Month=12\Day=20171231\sale-small-20171231-snappy.parquet` | File path in `asadatalakeNNNNNN`
 `wwi-02\sale-small\Year=2019` | Folder path in `asadatalakeNNNNNN` |
 `wwi-02\campaign-analytics\dailycounts.txt` | File path in `asadatalakeNNNNNN` |
-`wwi-02\campaign-analytics\sale-20161230-snappy.parquet` | File path in `asadatalakeNNNNNN` |
 `SQLPool01` | SQL pool |
 `sqlpool_import01` | Linked service (Azure Synapse Analytics) | Uses the `asa.sql.import01` user.
 `SparkPool01` | Spark pool |
