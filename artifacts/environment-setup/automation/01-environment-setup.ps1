@@ -102,6 +102,20 @@ if ($result.properties.status -ne "Online") {
 #Control-SQLPool -SubscriptionId $subscriptionId -ResourceGroupName $resourceGroupName -WorkspaceName $workspaceName -SQLPoolName $sqlPoolName -Action scale -SKU DW3000c
 #Wait-ForSQLPool -SubscriptionId $subscriptionId -ResourceGroupName $resourceGroupName -WorkspaceName $workspaceName -SQLPoolName $sqlPoolName -TargetStatus Online
 
+#Ensure SQLCMD is properly installed:
+
+#Install VC Redist
+#https://aka.ms/vs/15/release/vc_redist.x64.exe 
+
+#Install MS ODBC Driver 17 for SQL Server
+#https://www.microsoft.com/en-us/download/confirmation.aspx?id=56567 
+
+#Install SQL CMD x64
+#https://go.microsoft.com/fwlink/?linkid=2082790
+
+#Install Microsoft Online Services Sign-In Assistant for IT Professionals RTW
+#https://www.microsoft.com/en-us/download/details.aspx?id=41950
+
 Write-Information "Create SQL logins in master SQL pool"
 
 $params = @{ PASSWORD = $sqlPassword }
