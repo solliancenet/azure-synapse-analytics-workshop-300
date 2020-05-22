@@ -21,7 +21,7 @@
 
 * Install VC Redist: <https://aka.ms/vs/15/release/vc_redist.x64.exe>
 * Install MS ODBC Driver 17 for SQL Server: <https://www.microsoft.com/download/confirmation.aspx?id=56567>
-*Install SQL CMD x64: <https://go.microsoft.com/fwlink/?linkid=2082790>
+* Install SQL CMD x64: <https://go.microsoft.com/fwlink/?linkid=2082790>
 * Install Microsoft Online Services Sign-In Assistant for IT Professionals RTW: <https://www.microsoft.com/download/details.aspx?id=41950>
 
 Create the following file: **C:\LabFiles\AzureCreds.ps1**
