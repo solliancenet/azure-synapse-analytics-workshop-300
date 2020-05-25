@@ -12,8 +12,8 @@ $InformationPreference = "Continue"
 # TODO: Keep all required configuration in C:\LabFiles\AzureCreds.ps1 file
 . C:\LabFiles\AzureCreds.ps1
 
-$userName = $AzureUserName                # READ FROM FILE
-$password = $AzurePassword                # READ FROM FILE
+$global:userName = $AzureUserName                # READ FROM FILE
+$global:password = $AzurePassword                # READ FROM FILE
 $clientId = $TokenGeneratorClientId       # READ FROM FILE
 $global:sqlPassword = $AzureSQLPassword          # READ FROM FILE
 
@@ -122,7 +122,7 @@ $params = @{ PASSWORD = $sqlPassword }
 $result = Execute-SQLScriptFile -SQLScriptsPath $sqlScriptsPath -WorkspaceName $workspaceName -SQLPoolName "master" -FileName "01-create-logins" -Parameters $params
 $result
 
-Write-Information "Create SQL users and role assignments in $($sqlPoolName)"
+Write-Information "Create SQL users and role assignments in $($sqlPoolName) $userName"
 
 $params = @{ USER_NAME = $userName }
 $result = Execute-SQLScriptFile -SQLScriptsPath $sqlScriptsPath -WorkspaceName $workspaceName -SQLPoolName $sqlPoolName -FileName "02-create-users" -Parameters $params
