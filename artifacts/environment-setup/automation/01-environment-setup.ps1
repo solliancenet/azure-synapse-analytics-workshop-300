@@ -241,7 +241,7 @@ foreach ($script in $scripts.Keys) {
         
         # initiate the script and wait until it finishes
         Execute-SQLScriptFile -SQLScriptsPath $sqlScriptsPath -WorkspaceName $workspaceName -SQLPoolName $sqlPoolName -FileName $script -ForceReturn $true
-        Wait-ForSQLQuery -WorkspaceName $workspaceName -SQLPoolName $sqlPoolName -Label $scripts[$script] -ReferenceTime $refTime
+        #Wait-ForSQLQuery -WorkspaceName $workspaceName -SQLPoolName $sqlPoolName -Label $scripts[$script] -ReferenceTime $refTime
 }
 
 #Write-Information "Scale down the $($sqlPoolName) SQL pool to DW500c after baby MOADs import."
