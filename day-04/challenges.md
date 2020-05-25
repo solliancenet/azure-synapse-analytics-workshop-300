@@ -41,8 +41,6 @@ Sales data is currently being inserted into the SQL pool. About 57% of the data 
 
 One of WWI's large LOB systems had a major outage during the month of May 2017. Data was exported using an alternative approach and is available in CSV files. Starting June 2017, data is available as Parquet files.
 
-Also, customer data is only partially imported. Issues with the processing of customer information prevented a complete import of customer data.
-
 ### WWI resources
 
 WWI loaded their data to the primary ADLS Gen2 account for the Synapse Analytics workspace.
@@ -56,8 +54,6 @@ You can find the Parquet files in the following paths:
 - `wwi-02 / sale-small / Year=2017 / Quarter=Q4`
 - `wwi-02 / sale-small / Year=2018`
 - `wwi-02 / sale-small / Year=2019`
-
-You can find the complete customer data in the following path: `wwi-02 / data-generators / generator-customer.csv`. The file should be approximately 140 MB in size.
 
 >**IMPORTANT TECHNICAL NOTE**
 >
@@ -126,27 +122,3 @@ Leadership wants to see some early, tangible benefit from the data modernization
 >**INSIDER TIP**
 >
 > We've learned that WWI is running several PoC projects in parallel. Our sources tell us that one of the most important criteria to select the winner team will be the execution time of these queries. You should do your best to get the shortest execution times possible.
-
-## 4 - Manage and monitor the solution
-
-### Background story
-
-Wide World Importers has a commitment to their customers that they will protect their information from data leakage. They also have a commitment to higher authorities that they will maintain industry-standard compliance in handling and storing data, and to their shareholders that they will be responsible stewards of sensitive competitive data. All of these commitments have understandably given the CISO a lot of angst around ensuring absolute protection of the data and systems that access it, throughout the architecture's components. This new analytics solution is one part of a company-wide security initiative that the CISO is driving. There is an additional level of scrutiny on this project because it is a departure from their trusted on-premises sphere of influence. There is still an inherent mistrust of the cloud by some in WWI's leadership. The CISO wants to be able to assure them that the solution meets several key security requirements, including securing end-to-end data process, from the external files all the way to the serving layer.
-
-In addition, one of the current major pain points for the CIO is the limited capabilities of insights into various data processes. The CIO expects the new solution to significantly increase the visibility into all the data processes developed as part of the new analytical solution.
-
-### Technical details
-
-As you and your team plan the security and monitoring aspects of the solution, keep in mind that best practices must be followed for all components of your data pipeline. Data must be encrypted in-transit and at rest. You must follow least privilege access guidelines and make sure that auditing and monitoring are key aspects of your delivery.
-
-### Success criteria
-
-- Implement and demonstrate end-to-end security measures for the data warehouse rebuild process.
-  - The problem of customer PII (Personally Identifiable Information) is addressed.
-  - Least-privilege access is incorporated.
-  - Secrets are encrypted and not available in clear text, anywhere in the configuration.
-    - Want to maintain exclusive control over the keys to used to encrypt the data warehouse data at rest. They do not want Microsoft or any other entity to provide or have access to these keys.
-  - RBAC is implemented at both the data source (only system-level accounts access the source data), and at the serving layer. If you do not fully implement RBAC, you must be able to explain to WWI how you plan to implement it.
-  - Will need to prove the flexibility to assign users to groups who should have access to the workspace, as well those that might have elevated permissions, such as those who can administer the entire Synapse Workspace, or manage just the Spark or SQL Pools or use Pipelines.
-- Monitor all data processes and react to potential problems that might occur.
-  - Monitor for suspicious traffic against the storage account and receive alerts for any flagged incidents.

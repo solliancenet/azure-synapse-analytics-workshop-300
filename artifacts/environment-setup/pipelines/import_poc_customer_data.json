@@ -94,6 +94,96 @@
                                     "name": "FullName",
                                     "type": "String"
                                 }
+                            },
+                            {
+                                "source": {
+                                    "name": "Gender",
+                                    "type": "String"
+                                },
+                                "sink": {
+                                    "name": "Gender",
+                                    "type": "String"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "name": "Age",
+                                    "type": "String"
+                                },
+                                "sink": {
+                                    "name": "Age",
+                                    "type": "Int32"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "name": "BirthDate",
+                                    "type": "String"
+                                },
+                                "sink": {
+                                    "name": "BirthDate",
+                                    "type": "DateTime"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "name": "Address_PostalCode",
+                                    "type": "String"
+                                },
+                                "sink": {
+                                    "name": "Address_PostalCode",
+                                    "type": "String"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "name": "Address_Street",
+                                    "type": "String"
+                                },
+                                "sink": {
+                                    "name": "Address_Street",
+                                    "type": "String"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "name": "Address_City",
+                                    "type": "String"
+                                },
+                                "sink": {
+                                    "name": "Address_City",
+                                    "type": "String"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "name": "Address_Country",
+                                    "type": "String"
+                                },
+                                "sink": {
+                                    "name": "Address_Country",
+                                    "type": "String"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "name": "Mobile",
+                                    "type": "String"
+                                },
+                                "sink": {
+                                    "name": "Mobile",
+                                    "type": "String"
+                                }
+                            },
+                            {
+                                "source": {
+                                    "name": "Email",
+                                    "type": "String"
+                                },
+                                "sink": {
+                                    "name": "Email",
+                                    "type": "String"
+                                }
                             }
                         ]
                     }

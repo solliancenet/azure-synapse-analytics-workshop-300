@@ -10,7 +10,7 @@
         "typeProperties": {
             "location": {
                 "type": "AzureBlobFSLocation",
-                "fileName": "generator-customer.csv",
+                "fileName": "generator-customer-clean.csv",
                 "folderPath": "data-generators",
                 "fileSystem": "wwi-02"
             },
@@ -53,7 +53,19 @@
                 "type": "String"
             },
             {
-                "name": "Address",
+                "name": "Address_PostalCode",
+                "type": "String"
+            },
+            {
+                "name": "Address_Street",
+                "type": "String"
+            },
+            {
+                "name": "Address_City",
+                "type": "String"
+            },
+            {
+                "name": "Address_Country",
                 "type": "String"
             },
             {
