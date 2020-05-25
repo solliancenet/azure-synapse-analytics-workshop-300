@@ -12,7 +12,7 @@ execute sp_addrolemember 'db_owner', 'asa.sql.import02'
 
 create user [asa.sql.highperf] for login [asa.sql.highperf]
 execute sp_addrolemember 'db_owner', 'asa.sql.highperf' 
-execute sp_addrolemember 'staticrc80', 'asa.sql.highperf' 
+execute sp_addrolemember 'largerc', 'asa.sql.highperf' 
     
 CREATE USER [#USER_NAME#] FROM EXTERNAL PROVIDER;
 EXEC sp_addrolemember 'db_owner', '#USER_NAME#'
