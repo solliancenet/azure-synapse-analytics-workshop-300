@@ -122,7 +122,7 @@ $params = @{ PASSWORD = $sqlPassword }
 $result = Execute-SQLScriptFile -SQLScriptsPath $sqlScriptsPath -WorkspaceName $workspaceName -SQLPoolName "master" -FileName "01-create-logins" -Parameters $params
 $result
 
-Write-Information "Create SQL users and role assignments in $($sqlPoolName) $userName"
+Write-Information "Create SQL users and role assignments in $($sqlPoolName)"
 
 $params = @{ USER_NAME = $userName }
 $result = Execute-SQLScriptFile -SQLScriptsPath $sqlScriptsPath -WorkspaceName $workspaceName -SQLPoolName $sqlPoolName -FileName "02-create-users" -Parameters $params
@@ -241,7 +241,7 @@ foreach ($script in $scripts.Keys) {
         
         # initiate the script and wait until it finishes
         Execute-SQLScriptFile -SQLScriptsPath $sqlScriptsPath -WorkspaceName $workspaceName -SQLPoolName $sqlPoolName -FileName $script -ForceReturn $true
-        #Wait-ForSQLQuery -WorkspaceName $workspaceName -SQLPoolName $sqlPoolName -Label $scripts[$script] -ReferenceTime $refTime
+        Wait-ForSQLQuery -WorkspaceName $workspaceName -SQLPoolName $sqlPoolName -Label $scripts[$script] -ReferenceTime $refTime
 }
 
 #Write-Information "Scale down the $($sqlPoolName) SQL pool to DW500c after baby MOADs import."
