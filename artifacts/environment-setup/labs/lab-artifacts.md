@@ -96,12 +96,12 @@ Artifact Name | Artifact Type | Notes
 --- | --- | ---
 `SQLPool01` | SQL pool |
 `wwi_perf` | SQL pool schema |
-`wwi_perf.Sale_Heap` | SQL pool table | Contains 339507246 records.
-`wwi_perf.Sale_Partition01` | SQL pool table | Contains 339507246 records.
-`wwi_perf.Sale_Partition02` | SQL pool table | Contains 339507246 records.
+`wwi_perf.Sale_Heap` | SQL pool table (per user) | Contains 339507246 records.
+`wwi_perf.Sale_Partition01` | SQL pool table (per user) | Contains 339507246 records.
+`wwi_perf.Sale_Partition02` | SQL pool table (per user) | Contains 339507246 records.
 `wwi.Date` | SQL pool table | Contains 3652 records.
-`wwi_perf.Sale_Index` | SQL pool table | Contains 339507246 records.
-`wwi_perf.Sale_Hash_Ordered` | SQL pool table | Contains 339507246 records.
+`wwi_perf.Sale_Index` | SQL pool table (per user) | Contains 339507246 records.
+`wwi_perf.Sale_Hash_Ordered` | SQL pool table (per user) | Contains 339507246 records.
 
 Lab 03 creates the following artifacts that must be deleted when cleaning up the environment:
 
@@ -121,11 +121,11 @@ Artifact Name | Artifact Type | Notes
 --- | --- | ---
 `SQLPool01` | SQL pool |
 `wwi_perf` | SQL pool schema |
-`wwi_perf.Sale_Heap` | SQL pool table | Contains 339507246 records.
-`wwi_perf.Sale_Partition01` | SQL pool table | Contains 339507246 records.
-`wwi_perf.Sale_Partition02` | SQL pool table | Contains 339507246 records.
-`wwi_perf.Sale_Index` | SQL pool table | Contains 339507246 records.
-`wwi_perf.Sale_Hash_Ordered` | SQL pool table | Contains 339507246 records.
+`wwi_perf.Sale_Heap` | SQL pool table (per user) | Contains 339507246 records.
+`wwi_perf.Sale_Partition01` | SQL pool table (per user) | Contains 339507246 records.
+`wwi_perf.Sale_Partition02` | SQL pool table (per user) | Contains 339507246 records.
+`wwi_perf.Sale_Index` | SQL pool table (per user) | Contains 339507246 records.
+`wwi_perf.Sale_Hash_Ordered` | SQL pool table (per user) | Contains 339507246 records.
 
 Lab 04 depends on the following artifacts created by previous labs:
 
@@ -155,15 +155,15 @@ Artifact Name | Artifact Type | Notes
 `asakeyvaultNNNNNN` | Azure Key Vault |
 `asakeyvaultNNNNNN` | Linked service |
 `SQLPool01` | SQL pool |
-`Lab 05 - Exercise 3 - Column Level Security` | SQL script |
-`Lab 05 - Exercise 3 - Row Level Security` | SQL script |
-`Lab 05 - Exercise 3 - Dynamic Data Masking` | SQL script |
+`Lab 05 - Exercise 3 - Column Level Security` | SQL script (per user) |
+`Lab 05 - Exercise 3 - Row Level Security` | SQL script (per user) |
+`Lab 05 - Exercise 3 - Dynamic Data Masking` | SQL script (per user) |
 `wwi_security` | SQL pool schema |
-`wwi_security.Sale` | SQL pool table | Contains 52 records.
-`wwi_security.CustomerInfo` | SQL pool table | Contains 110 records.
-`CEO` | SQL pool user |
-`DataAnalystMiami` | SQL pool user |
-`DataAnalystSanDiego` | SQL pool user |
+`wwi_security.Sale` | SQL pool table (per user) | Contains 52 records.
+`wwi_security.CustomerInfo` | SQL pool table (per user) | Contains 110 records.
+`CEO` | SQL pool user (per user) |
+`DataAnalystMiami` | SQL pool user (per user) |
+`DataAnalystSanDiego` | SQL pool user (per user) |
 
 Lab 05 creates the following artifacts that must be deleted when cleaning up the environment:
 
@@ -183,7 +183,7 @@ Artifact Name | Artifact Type | Notes
 --- | --- | ---
 `asadatalakeNNNNNN` | ADLS Gen2 storage account |
 `wwi-02` | ADLS Gen2 file system in `asadatalakeNNNNNN` |
-`Lab 06 - Machine Learning` | Spark notebook |
+`Lab 06 - Machine Learning` | Spark notebook (per user) |
 `SQLPool01` | SQL pool |
 `SparkPool01` | Spark pool |
 `wwi` | SQL pool schema |
@@ -193,8 +193,8 @@ Artifact Name | Artifact Type | Notes
 `StorageCredential` | SQL pool database scoped credential |
 `ModelStorage` | SQL pool external data source |
 `csv` | SQL pool external file format |
-`wwi_ml.MLModelExt` | SQL pool external table | Contains 1 record.
-`wwi_ml.MLModel` | SQL pool table | Contains 0 records.
+`wwi_ml.MLModelExt` | SQL pool external table (per user) | Contains 1 record.
+`wwi_ml.MLModel` | SQL pool table (per user) | Contains 0 records.
 
 Lab 06 creates the following artifacts that must be deleted when cleaning up the environment:
 
@@ -208,7 +208,7 @@ Lab 07 depends on the following artifacts that must exist in the environment:
 
 Artifact Name | Artifact Type | Notes
 --- | --- | ---
-`Lab 07 - Spark ML` | Spark notebook |
+`Lab 07 - Spark ML` | Spark notebook (per user) |
 `SQLPool01` | SQL pool |
 `SparkPool01` | Spark pool |
 `wwi.SaleSmall` | SQL pool table | Contains 1863080489 rows.
@@ -226,9 +226,9 @@ Lab 08 depends on the following artifacts that must exist in the environment:
 Artifact Name | Artifact Type | Notes
 --- | --- | ---
 `SQLPool01` | SQL pool |
-`asa.sql.workload01` | SQL pool user |
-`asa.sql.workload02` | SQL pool user |
-`Lab 08 - Execute Data Analyst and CEO Queries` | Pipeline |
+`asa.sql.workload01` | SQL pool user (per user) |
+`asa.sql.workload02` | SQL pool user (per user) |
+`Lab 08 - Execute Data Analyst and CEO Queries` | Pipeline (per user) |
 
 Lab 08 creates the following artifacts that must be deleted when cleaning up the environment:
 
