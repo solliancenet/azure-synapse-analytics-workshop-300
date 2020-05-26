@@ -180,7 +180,7 @@ if ($sqlPool -eq $null) {
                         ValidCount = $false
                 }
                 "wwi.SaleSmall" = @{
-                        Count = 1863080489
+                        Count = 981438179
                         StrictCount = $true
                         Valid = $false
                         ValidCount = $false
