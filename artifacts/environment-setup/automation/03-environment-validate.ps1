@@ -12,8 +12,8 @@ $InformationPreference = "Continue"
 # TODO: Keep all required configuration in C:\LabFiles\AzureCreds.ps1 file
 . C:\LabFiles\AzureCreds.ps1
 
-$userName = $AzureUserName                # READ FROM FILE
-$password = $AzurePassword                # READ FROM FILE
+$global:userName = $AzureUserName                # READ FROM FILE
+$global:password = $AzurePassword                # READ FROM FILE
 $clientId = $TokenGeneratorClientId       # READ FROM FILE
 $global:sqlPassword = $AzureSQLPassword          # READ FROM FILE
 
@@ -150,8 +150,9 @@ foreach ($asaArtifactName in $asaArtifacts.Keys) {
                 $asaArtifacts[$asaArtifactName]["Valid"] = $true
                 Write-Information "OK"
         }
-        catch { 
+        catch {
                 Write-Warning "Not found!"
+                Write-Host $_
                 $overallStateIsValid = $false
         }
 }
@@ -180,7 +181,7 @@ if ($sqlPool -eq $null) {
                         ValidCount = $false
                 }
                 "wwi.SaleSmall" = @{
-                        Count = 1863080489
+                        Count = 981438179
                         StrictCount = $true
                         Valid = $false
                         ValidCount = $false
@@ -383,7 +384,7 @@ if ($dataLakeAccount -eq $null) {
                         "sale-small\Year=2018" = "folder path"
                         "sale-small\Year=2019" = "folder path"
                         "sale-small\Year=2017\Quarter=Q4\Month=12\Day=20171231\sale-small-20171231-snappy.parquet" = "file path"
-                        "campaign-analytics\dailycounts.txt" = "file path",
+                        "campaign-analytics\dailycounts.txt" = "file path"
                         "campaign-analytics\campaignanalytics.csv" = "file path"
                 }
         

@@ -19,6 +19,12 @@
     Install-Module -Name Az.CosmosDB -RequiredVersion 0.1.4
     ```
 
+* `sqlserver` module
+
+    ```powershell
+    Install-Module -Name SqlServer
+    ```
+
 * Install VC Redist: <https://aka.ms/vs/15/release/vc_redist.x64.exe>
 * Install MS ODBC Driver 17 for SQL Server: <https://www.microsoft.com/download/confirmation.aspx?id=56567>
 * Install SQL CMD x64: <https://go.microsoft.com/fwlink/?linkid=2082790>
@@ -32,6 +38,8 @@ $AzurePassword="..."
 $TokenGeneratorClientId="1950a258-227b-4e31-a9cf-717495945fc2"
 $AzureSQLPassword="..."
 ```
+
+> The `AzureSQLPassword` value is the value passed to the `sqlAdministratorLoginPassword` parameter when running the `01-asa-workspace-core.json` ARM template. You can find this value by looking at the `SQL-USER_ASA` Key Vault secret.
 
 ## Execute setup scripts
 

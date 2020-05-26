@@ -9,5 +9,3 @@ WWI wants you to show them how automated machine learning might help them accele
 1. Open the Develop hub.
 2. Select Notebooks and open `Activity 05 - Model training.ipynb`.
 3. Follow the instructions within the notebook.
-
-
