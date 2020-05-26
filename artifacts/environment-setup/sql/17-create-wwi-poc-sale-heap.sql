@@ -16,5 +16,5 @@ FROM
 	[wwi].[SaleSmall]
 WHERE
     TransactionDateId < 20170501
-    AND TransactionDateId >= 20140101
+    AND TransactionDateId >= 20170101
 OPTION  (LABEL  = 'CTAS : wwi_poc.Sale')
