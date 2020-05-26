@@ -150,8 +150,9 @@ foreach ($asaArtifactName in $asaArtifacts.Keys) {
                 $asaArtifacts[$asaArtifactName]["Valid"] = $true
                 Write-Information "OK"
         }
-        catch { 
+        catch {
                 Write-Warning "Not found!"
+                Write-Host $_
                 $overallStateIsValid = $false
         }
 }
