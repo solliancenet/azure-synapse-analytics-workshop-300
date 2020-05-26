@@ -884,7 +884,7 @@ function Create-SQLScript {
     $query = Get-Content -Raw -Path $ScriptFileName -Encoding utf8
 
     if ($ScriptParams) {
-        foreach ($scriptParamName in $scriptParams.Keys) {{
+        foreach ($scriptParamName in $scriptParams.Keys) {
             $query = $query.Replace($scriptParamName, $ScriptParams[$scriptParamName])
         }
     }

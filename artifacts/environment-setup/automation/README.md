@@ -46,5 +46,7 @@ $AzureSQLPassword="..."
 * Open PowerShell as an Administrator and change directories to the root of this repo within your local file system.
 * Run `Set-ExecutionPolicy Unrestricted`.
 * Execute `Connect-AzAccount` and sign in to the ODL user account when prompted.
-* Execute `.\artifacts\environment-setup\automation\01-environment-setup.ps1`.
-* Execute `.\artifacts\environment-setup\automation\03-environment-validate.ps1`.
+* Execute `.\artifacts\environment-setup\automation\01-environment-setup-global.ps1`.
+* Execute `.\artifacts\environment-setup\automation\01-environment-setup-user.ps1`.
+* Execute `.\artifacts\environment-setup\automation\03-environment-validate-global.ps1`.
+* Execute `.\artifacts\environment-setup\automation\03-environment-validate-user.ps1`.

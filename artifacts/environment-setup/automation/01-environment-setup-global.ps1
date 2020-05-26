@@ -325,3 +325,5 @@ Wait-ForOperation -WorkspaceName $workspaceName -OperationId $result.operationId
 #       End loading data from the data lake into the Cosmos DB database
 #
 #-----------------------------------------------------------------------------------
+
+}
