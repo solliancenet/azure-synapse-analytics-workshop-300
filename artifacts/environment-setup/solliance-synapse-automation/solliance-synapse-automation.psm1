@@ -345,10 +345,18 @@ function Create-Dataset {
 
     [parameter(Mandatory=$false)]
     [Hashtable]
-    $Parameters = $null
+    $Parameters = $null,
+
+    [parameter(Mandatory=$false)]
+    [String]
+    $FileName = $null
     )
 
-    $itemTemplate = Get-Content -Path "$($DatasetsPath)/$($Name).json"
+    if ($FileName -eq $null) {
+        $FileName = $Name
+    }
+
+    $itemTemplate = Get-Content -Path "$($DatasetsPath)/$($FileName).json"
     $item = $itemTemplate.Replace("#LINKED_SERVICE_NAME#", $LinkedServiceName)
 
     if ($Parameters -ne $null) {

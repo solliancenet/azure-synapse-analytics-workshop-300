@@ -179,13 +179,14 @@ foreach ($userContext in $userContexts) {
         Write-Information "Create data sets for Lab 08"
 
         $datasets = @{
-                "wwi02_sale_small_workload_01_asa_$($userContext)" = "$($sqlPoolName.ToLower())_workload01_$($userContext)"
-                "wwi02_sale_small_workload_02_asa_$($userContext)" = "$($sqlPoolName.ToLower())_workload02_$($userContext)"
+                "wwi02_sale_small_workload_01_asa" = "$($sqlPoolName.ToLower())_workload01_$($userContext)"
+                "wwi02_sale_small_workload_02_asa" = "$($sqlPoolName.ToLower())_workload02_$($userContext)"
         }
 
         foreach ($dataset in $datasets.Keys) {
+                $datasetName = "$($datasets[$dataset])_$($userContext)"
                 Write-Information "Creating dataset $($dataset)"
-                $result = Create-Dataset -DatasetsPath $datasetsPath -WorkspaceName $workspaceName -Name $dataset -LinkedServiceName $datasets[$dataset]
+                $result = Create-Dataset -DatasetsPath $datasetsPath -WorkspaceName $workspaceName -Name $datasetName -LinkedServiceName $datasets[$dataset] -FileName = $dataset
                 Wait-ForOperation -WorkspaceName $workspaceName -OperationId $result.operationId
         }
 
