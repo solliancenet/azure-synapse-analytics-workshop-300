@@ -210,6 +210,26 @@ foreach ($userContext in $userContexts) {
                                 Valid = $false
                                 ValidCount = $false
                         }
+                        "wwi_poc.Date_$($userContext)" = @{
+                                Count = 3652
+                                Valid = $false
+                                ValidCount = $false
+                        }
+                        "wwi_poc.Product_$($userContext)" = @{
+                                Count = 5000
+                                Valid = $false
+                                ValidCount = $false
+                        }
+                        "wwi_poc.Sale_$($userContext)" = @{
+                                Count = 981995895
+                                Valid = $false
+                                ValidCount = $false
+                        }
+                        "wwi_poc.Customer_$($userContext)" = @{
+                                Count = 1000000
+                                Valid = $false
+                                ValidCount = $false
+                        }
                 }
         
 $query = @"
