@@ -9,7 +9,7 @@
                 "userProperties": [],
                 "typeProperties": {
                     "items": {
-                        "value": "@range(1,20)",
+                        "value": "@range(1,1000)",
                         "type": "Expression"
                     },
                     "activities": [
@@ -28,11 +28,11 @@
                             "typeProperties": {
                                 "source": {
                                     "type": "SqlDWSource",
-                                    "sqlReaderQuery": "select count(X.A) from (\nselect CAST(CustomerId as nvarchar(20)) as A from wwi.SaleSmall) X where A like '%3%'",
+                                    "sqlReaderQuery": "select count(X.A) from (\nselect CAST(CustomerId as nvarchar(20)) as A from wwi.SaleSmall) X",
                                     "queryTimeout": "02:00:00"
                                 },
                                 "dataset": {
-                                    "referenceName": "wwi02_sale_small_workload_01_asa",
+                                    "referenceName": "wwi02_sale_small_workload_01_asa_#USER_CONTEXT#",
                                     "type": "DatasetReference"
                                 }
                             }
@@ -47,7 +47,7 @@
                 "userProperties": [],
                 "typeProperties": {
                     "items": {
-                        "value": "@range(1,20)",
+                        "value": "@range(1,1000)",
                         "type": "Expression"
                     },
                     "activities": [
@@ -66,11 +66,11 @@
                             "typeProperties": {
                                 "source": {
                                     "type": "SqlDWSource",
-                                    "sqlReaderQuery": "select count(X.A) from (\nselect CAST(CustomerId as nvarchar(20)) as A from wwi.SaleSmall) X where A like '%3%'",
+                                    "sqlReaderQuery": "select count(X.A) from (\nselect CAST(CustomerId as nvarchar(20)) as A from wwi.SaleSmall) X",
                                     "queryTimeout": "02:00:00"
                                 },
                                 "dataset": {
-                                    "referenceName": "wwi02_sale_small_workload_02_asa",
+                                    "referenceName": "wwi02_sale_small_workload_02_asa_#USER_CONTEXT#",
                                     "type": "DatasetReference"
                                 }
                             }

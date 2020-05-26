@@ -6,7 +6,7 @@
 -- Step:1 The Sale table has two Analyst values: DataAnalystMiami and DataAnalystSanDiego. 
 --     Each analyst has jurisdiction across a specific Region. DataAnalystMiami on the South East Region
 --      and DataAnalystSanDiego on the Far West region.
-SELECT DISTINCT Analyst, Region FROM wwi_security.Sale order by Analyst ;
+SELECT DISTINCT Analyst, Region FROM wwi_security.Sale_#USER_CONTEXT# order by Analyst ;
 
 /* Scenario: WWI requires that an Analyst only see the data for their own data from their own region. The CEO should see ALL data.
     In the Sale table, there is an Analyst column that we can use to filter data to a specific Analyst value. */
@@ -25,43 +25,43 @@ SELECT * FROM sys.security_predicates
 --  a row should be returned in the parent query.
 GO
 
-CREATE FUNCTION wwi_security.fn_securitypredicate(@Analyst AS sysname)  
+CREATE FUNCTION wwi_security.fn_securitypredicate_#USER_CONTEXT#(@Analyst AS sysname)  
     RETURNS TABLE  
 WITH SCHEMABINDING  
 AS  
     RETURN SELECT 1 AS fn_securitypredicate_result
-    WHERE @Analyst = USER_NAME() OR USER_NAME() = 'CEO'
+    WHERE @Analyst = USER_NAME() OR USER_NAME() = 'CEO_#USER_CONTEXT#'
 GO
 -- Now we define security policy that adds the filter predicate to the Sale table. This will filter rows based on their login name.
-CREATE SECURITY POLICY SalesFilter  
-ADD FILTER PREDICATE wwi_security.fn_securitypredicate(Analyst)
-ON wwi_security.Sale
+CREATE SECURITY POLICY SalesFilter_#USER_CONTEXT#  
+ADD FILTER PREDICATE wwi_security.fn_securitypredicate_#USER_CONTEXT#(Analyst)
+ON wwi_security.Sale_#USER_CONTEXT#
 WITH (STATE = ON);
 
 ------ Allow SELECT permissions to the Sale Table.------
-GRANT SELECT ON wwi_security.Sale TO CEO, DataAnalystMiami, DataAnalystSanDiego;
+GRANT SELECT ON wwi_security.Sale_#USER_CONTEXT# TO CEO_#USER_CONTEXT#, DataAnalystMiami_#USER_CONTEXT#, DataAnalystSanDiego_#USER_CONTEXT#;
 
 -- Step:3 Let us now test the filtering predicate, by selecting data from the Sale table as 'DataAnalystMiami' user.
-EXECUTE AS USER = 'DataAnalystMiami' 
-SELECT * FROM wwi_security.Sale;
+EXECUTE AS USER = 'DataAnalystMiami_#USER_CONTEXT#' 
+SELECT * FROM wwi_security.Sale_#USER_CONTEXT#;
 revert;
 -- As we can see, the query has returned rows here Login name is DataAnalystMiami
 
 -- Step:4 Let us test the same for  'DataAnalystSanDiego' user.
-EXECUTE AS USER = 'DataAnalystSanDiego';
-SELECT * FROM wwi_security.Sale;
+EXECUTE AS USER = 'DataAnalystSanDiego_#USER_CONTEXT#';
+SELECT * FROM wwi_security.Sale_#USER_CONTEXT#;
 revert;
 -- RLS is working indeed.
 
 -- Step:5 The CEO should be able to see all rows in the table.
-EXECUTE AS USER = 'CEO';  
-SELECT * FROM wwi_security.Sale;
+EXECUTE AS USER = 'CEO_#USER_CONTEXT#';  
+SELECT * FROM wwi_security.Sale_#USER_CONTEXT#;
 revert;
 -- And he can.
 
 --Step:6 To disable the security policy we just created above, we execute the following.
-ALTER SECURITY POLICY SalesFilter  
+ALTER SECURITY POLICY SalesFilter_#USER_CONTEXT# 
 WITH (STATE = OFF);
 
-DROP SECURITY POLICY SalesFilter;
-DROP FUNCTION wwi_security.fn_securitypredicate;
+DROP SECURITY POLICY SalesFilter_#USER_CONTEXT#;
+DROP FUNCTION wwi_security.fn_securitypredicate_#USER_CONTEXT#;

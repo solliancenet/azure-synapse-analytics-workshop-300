@@ -188,7 +188,7 @@ Artifact Name | Artifact Type | Notes
 `SparkPool01` | Spark pool |
 `wwi` | SQL pool schema |
 `wwi_ml` | SQL pool schema |
-`wwi.SaleSmall` | SQL pool table | Contains 981438179 records.
+`wwi.SaleSmall` | SQL pool table | Contains 1863080489 records.
 `wwi.Product` | SQL pool table | Contains 5000 records.
 `StorageCredential` | SQL pool database scoped credential |
 `ModelStorage` | SQL pool external data source |
@@ -217,7 +217,7 @@ Lab 07 creates the following artifacts that must be deleted when cleaning up the
 
 Artifact Name | Artifact Type | Notes
 --- | --- | ----
-`wwi.Recommendations` | SQL pool table |
+`wwi_ml.Recommendations` | SQL pool table |
 
 ## Lab 08
 

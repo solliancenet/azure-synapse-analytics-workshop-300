@@ -341,11 +341,22 @@ function Create-Dataset {
 
     [parameter(Mandatory=$true)]
     [String]
-    $LinkedServiceName
+    $LinkedServiceName,
+
+    [parameter(Mandatory=$false)]
+    [Hashtable]
+    $Parameters = $null
     )
 
     $itemTemplate = Get-Content -Path "$($DatasetsPath)/$($Name).json"
     $item = $itemTemplate.Replace("#LINKED_SERVICE_NAME#", $LinkedServiceName)
+
+    if ($Parameters -ne $null) {
+        foreach ($key in $Parameters.Keys) {
+            $item = $item.Replace("#$($key)#", $Parameters[$key])
+        }
+    }
+
     $uri = "https://$($WorkspaceName).dev.azuresynapse.net/datasets/$($Name)?api-version=2019-06-01-preview"
 
     Ensure-ValidTokens
@@ -829,10 +840,6 @@ function Execute-SQLScriptFile {
         }
     }
 
-    #https://aka.ms/vs/15/release/vc_redist.x64.exe 
-    #https://www.microsoft.com/en-us/download/confirmation.aspx?id=56567
-    #https://go.microsoft.com/fwlink/?linkid=2082790
-
     if ($UseAPI) {
         Execute-SQLQuery -WorkspaceName $WorkspaceName -SQLPoolName $SQLPoolName -SQLQuery $sqlQuery -ForceReturn $ForceReturn
     } else {
@@ -863,7 +870,11 @@ function Create-SQLScript {
 
     [parameter(Mandatory=$true)]
     [String]
-    $ScriptFileName
+    $ScriptFileName,
+
+    [parameter(Mandatory=$false)]
+    [Hashtable]
+    $ScriptParams
     )
 
     $item = Get-Content -Raw -Path "$($TemplatesPath)/sql_script.json"
@@ -871,6 +882,13 @@ function Create-SQLScript {
     $jsonItem = ConvertFrom-Json $item
 
     $query = Get-Content -Raw -Path $ScriptFileName -Encoding utf8
+
+    if ($ScriptParams) {
+        foreach ($scriptParamName in $scriptParams.Keys) {{
+            $query = $query.Replace($scriptParamName, $ScriptParams[$scriptParamName])
+        }
+    }
+
     $query = ConvertFrom-Json (ConvertTo-Json $query)
 
     $jsonItem.properties.content.query = $query.value

@@ -7,6 +7,6 @@ SELECT
     ,AVG(FS.ProfitAmount) as AvgProfitAmount
     ,COUNT(DISTINCT FS.StoreId) as DistinctStores
 FROM
-    wwi_perf.Sale_Heap FS
+    wwi_perf.Sale_Heap_#USER_CONTEXT# FS
 GROUP BY
     FS.CustomerId
