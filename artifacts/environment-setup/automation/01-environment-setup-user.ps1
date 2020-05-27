@@ -225,7 +225,8 @@ foreach ($userContext in $userContexts) {
 
         foreach ($notebookName in $notebooks.Keys) {
 
-                $notebookFileName = "$($notebooks[$notebookName])\$($notebookName) - $($userContext).ipynb"
+                $notebookFileName = "$($notebooks[$notebookName])\$($notebookName).ipynb"
+                $notebookName = "$($notebookName) - $($userContext)"
                 Write-Information "Creating notebook $($notebookName) from $($notebookFileName)"
                 
                 $result = Create-SparkNotebook -TemplatesPath $templatesPath -SubscriptionId $subscriptionId -ResourceGroupName $resourceGroupName `
@@ -249,7 +250,8 @@ foreach ($userContext in $userContexts) {
 
         foreach ($sqlScriptName in $sqlScripts.Keys) {
                 
-                $sqlScriptFileName = "$($sqlScripts[$sqlScriptName])\$($sqlScriptName) - $($userContext).sql"
+                $sqlScriptFileName = "$($sqlScripts[$sqlScriptName])\$($sqlScriptName).sql"
+                $sqlScriptName = "$($sqlScriptName) - $($userContext)"
                 Write-Information "Creating SQL script $($sqlScriptName) from $($sqlScriptFileName)"
                 
                 $result = Create-SQLScript -TemplatesPath $templatesPath -WorkspaceName $workspaceName -Name $sqlScriptName -ScriptFileName $sqlScriptFileName -ScriptParams $scriptParams
