@@ -4,18 +4,32 @@
 
 ### Task 1 - Identify performance issues related to tables
 
-1. In `Synapse Studio`, open a new SQL script and run the following statement (make sure you run queries on SQL pools as opposed to `SQL on-demand`):
+> **Important note:** Throughout the labs, you will be asked to replace `SUFFIX` with your student ID value. This ensures unique names for any artifacts you create, in case you are sharing a Synapse Analytics workspace with others. Your student ID is the set of numbers at the end of your assigned username. For example, if your username is `odl_user_104871`, your student ID is `104871`.
+
+1. Open Synapse Analytics Studio, and then navigate to the **Develop** hub.
+
+    ![The Develop menu item is highlighted.](media/develop-hub.png "Develop hub")
+
+2. From the **Develop** menu, select the + button and choose **SQL Script** from the context menu.
+
+    ![The SQL script context menu item is highlighted.](media/synapse-studio-new-sql-script.png "New SQL script")
+
+3. In the toolbar menu, connect to the **SQL Pool** assigned for your environment.
+
+    ![The connect to option is highlighted in the query toolbar.](media/synapse-studio-query-toolbar-connect.png "Query toolbar")
+
+4. Paste and run the following statement (make sure you run queries on SQL pools as opposed to `SQL on-demand`) (where `SUFFIX` is your **student ID**):
 
     ```sql
     SELECT  
         COUNT_BIG(*)
     FROM
-        [wwi_perf].[Sale_Heap]
+        [wwi_perf].[Sale_Heap_SUFFIX]
     ```
 
     The script takes up to 30 seconds to execute and returns a count of ~ 340 million rows in the table.
 
-2. Run the following (more complex) statement:
+2. Run the following (more complex) statement (where `SUFFIX` is your **student ID**):
 
     ```sql
     SELECT TOP 1000 * FROM
@@ -24,28 +38,27 @@
             S.CustomerId
             ,SUM(S.TotalAmount) as TotalAmount
         FROM
-            [wwi_perf].[Sale_Heap] S
+            [wwi_perf].[Sale_Heap_SUFFIX] S
         GROUP BY
             S.CustomerId
     ) T
     OPTION (LABEL = 'Lab03: Heap')
     ```
 
-    The script takes up to a couple of minutes to execute and returns the result. There is clearly something wrong with the `Sale_Heap` table that induces the performance hit.
+    The script takes a while to execute and returns the result. There is clearly something wrong with the `Sale_Heap` table that induces the performance hit.
 
     > Note the OPTION clause used in the statement. This comes in handy when you're looking to identify your query in the [sys.dm_pdw_exec_requests](https://docs.microsoft.com/en-us/sql/relational-databases/system-dynamic-management-views/sys-dm-pdw-exec-requests-transact-sql) DMV.
-    >
-    >```sql
-    >SELECT  *
-    >FROM    sys.dm_pdw_exec_requests
-    >WHERE   [label] = 'Lab03: Heap';
-    >```
-    >
+
+    ```sql
+    SELECT  *
+    FROM    sys.dm_pdw_exec_requests
+    WHERE   [label] = 'Lab03: Heap';
+    ```
 
 3. Check the structure of the `Sale_Heap` table, by right clicking on it in the `Data` hub and selecting `New SQL script` and then `CREATE`. Take a look at the script used to create the table:
 
     ```sql
-    CREATE TABLE [wwi_perf].[Sale_Heap]
+    CREATE TABLE [wwi_perf].[Sale_Heap_SUFFIX]
     (
         [TransactionId] [uniqueidentifier]  NOT NULL,
         [CustomerId] [int]  NOT NULL,
@@ -74,7 +87,7 @@
     >
     >In this case, when we are looking for fast query response times, the heap structure is not a good choice as we will see in a moment. Still, there are cases where using a heap table can help performance rather than hurting it. One such example is when we're looking to ingest large amounts of data into the SQL pool.
 
-4. Run the same script as the one you've run at step 2, but this time with the `EXPLAIN WITH_RECOMMENDATIONS` line before it:
+4. Run the same script as the one you've run at step 2, but this time with the `EXPLAIN WITH_RECOMMENDATIONS` line before it (where `SUFFIX` is your **student ID**):
 
     ```sql
     EXPLAIN WITH_RECOMMENDATIONS
@@ -84,7 +97,7 @@
             S.CustomerId
             ,SUM(S.TotalAmount) as TotalAmount
         FROM
-            [wwi_perf].[Sale_Heap] S
+            [wwi_perf].[Sale_Heap_SUFFIX] S
         GROUP BY
             S.CustomerId
     ) T
@@ -229,7 +242,6 @@
         sys.dm_pdw_dms_workers
     WHERE
         request_id = 'QID473552'
-        AND step_index = 1
     ORDER BY
         distribution_id
     ```
@@ -240,10 +252,10 @@
 
 ### Task 2 - Improve table structure with hash distribution and columnstore index
 
-1. Create an improved version of the table using CTAS (Create Table As Select):
+1. Create an improved version of the table using CTAS (Create Table As Select) (where `SUFFIX` is your **student ID**):
 
     ```sql
-    CREATE TABLE [wwi_perf].[Sale_Hash]
+    CREATE TABLE [wwi_perf].[Sale_Hash_SUFFIX]
     WITH
     (
         DISTRIBUTION = HASH ( [CustomerId] ),
@@ -253,10 +265,10 @@
     SELECT
         *
     FROM
-        [wwi_perf].[Sale_Heap]
+        [wwi_perf].[Sale_Heap_SUFFIX]
     ```
 
-    The query will take about 10 minutes to complete.
+    The query will take about 2 minutes to complete.
 
     >Note:
     >CTAS is a more customizable version of the SELECT...INTO statement.
@@ -264,7 +276,7 @@
     >
     >With CTAS, on the other hand, you can specify both the distribution of the table data as well as the table structure type.
 
-2. Run the query again to see the performance improvements:
+2. Run the query again to see the performance improvements (where `SUFFIX` is your **student ID**):
 
     ```sql
     SELECT TOP 1000 * FROM
@@ -273,13 +285,13 @@
             S.CustomerId
             ,SUM(S.TotalAmount) as TotalAmount
         FROM
-            [wwi_perf].[Sale_Hash] S
+            [wwi_perf].[Sale_Hash_SUFFIX] S
         GROUP BY
             S.CustomerId
     ) T
     ```
 
-3. Run the following EXPLAIN statement again to get the query plan (do not select `Query Plan` from the toolbar as it will try do download the query plan and open it in SQL Server Management Studio):
+3. Run the following EXPLAIN statement again to get the query plan (do not select `Query Plan` from the toolbar as it will try do download the query plan and open it in SQL Server Management Studio) (where `SUFFIX` is your **student ID**):
 
     ```sql
     EXPLAIN
@@ -289,7 +301,7 @@
             S.CustomerId
             ,SUM(S.TotalAmount) as TotalAmount
         FROM
-            [wwi_perf].[Sale_Hash] S
+            [wwi_perf].[Sale_Hash_SUFFIX] S
         GROUP BY
             S.CustomerId
     ) T
@@ -320,7 +332,7 @@
     </dsql_query>
     ```
 
-4. Try running a more complex query and investigate the execution plan and execution steps. Here is an example of a more complex query you can use:
+4. Try running a more complex query and investigate the execution plan and execution steps. Here is an example of a more complex query you can use (where `SUFFIX` is your **student ID**):
 
     ```sql
     SELECT
@@ -336,8 +348,8 @@
             ,SUM(S.ProfitAmount) as TotalProfit
             ,AVG(S.ProfitAmount) as AvgProfit
         FROM
-            [wwi_perf].[Sale_Partition01] S
-            join [wwi].[Date] D on 
+            [wwi_perf].[Sale_Partition01_SUFFIX] S
+            join [wwi].[Date] D on
                 D.DateId = S.TransactionDateId
         GROUP BY
             S.CustomerId
@@ -357,7 +369,7 @@ Your SQL pool already contains two versions of the `Sale` table that have been p
 >These queries have already been run on the SQL pool. If you want to test the CTAS queries yourself, make sure you replace the table names with new ones.
 
 ```sql
-CREATE TABLE [wwi_perf].[Sale_Partition01]
+CREATE TABLE [wwi_perf].[Sale_Partition01_SUFFIX]
 WITH
 (
     DISTRIBUTION = HASH ( [CustomerId] ),
@@ -372,7 +384,7 @@ AS
 SELECT
     *
 FROM	
-    [wwi_perf].[Sale_Heap]
+    [wwi_perf].[Sale_Heap_SUFFIX]
 OPTION  (LABEL  = 'CTAS : Sale_Partition01')
 
 CREATE TABLE [wwi_perf].[Sale_Partition02]
@@ -390,7 +402,7 @@ AS
 SELECT
     *
 FROM	
-    [wwi_perf].[Sale_Heap]
+    [wwi_perf].[Sale_Heap_SUFFIX]
 OPTION  (LABEL  = 'CTAS : Sale_Partition02')
 ```
 
@@ -412,10 +424,10 @@ Notice the two partitioning strategies we've used here. The first partitioning s
 
     ![The connect to option is highlighted in the query toolbar.](media/synapse-studio-query-toolbar-connect.png "Query toolbar")
 
-4. The following query attempts to find the TOP 100 of customers that have the most sale transactions:
+4. The following query attempts to find the TOP 100 of customers that have the most sale transactions (where `SUFFIX` is your **student ID**):
 
     ```sql
-    SELECT COUNT( DISTINCT CustomerId) from wwi_perf.Sale_Heap
+    SELECT COUNT( DISTINCT CustomerId) from wwi_perf.Sale_Heap_SUFFIX
     ```
 
     Query takes up to 20 seconds to execute. That is expected, since distinct counts are one of the most difficult to optimize types of queries.
@@ -423,7 +435,7 @@ Notice the two partitioning strategies we've used here. The first partitioning s
 5. Run the HyperLogLog approach:
 
     ```sql
-    SELECT APPROX_COUNT_DISTINCT(CustomerId) from wwi_perf.Sale_Heap
+    SELECT APPROX_COUNT_DISTINCT(CustomerId) from wwi_perf.Sale_Heap_SUFFIX
     ```
 
     Query takes about half the time to execute.
@@ -441,9 +453,7 @@ As opposed to a standard view, a materialized view pre-computes, stores, and mai
 |Extra storage                   | No                                           | Yes                             
 |Syntax                          | CREATE VIEW                                  | CREATE MATERIALIZED VIEW AS SELECT     
 
-> **Important note:** Throughout the labs, you will be asked to replace `SUFFIX` with your student ID value. This ensures unique names for any artifacts you create, in case you are sharing a Synapse Analytics workspace with others. Your student ID is the set of numbers at the end of your assigned username. For example, if your username is `odl_user_104871`, your student ID is `104871`.
-
-1. Execute the following query to get an approximation of its execution time:
+1. Execute the following query to get an approximation of its execution time (where `SUFFIX` is your **student ID**):
 
     ```sql
     SELECT TOP 1000 * FROM
@@ -454,7 +464,7 @@ As opposed to a standard view, a materialized view pre-computes, stores, and mai
             ,D.Quarter
             ,SUM(S.TotalAmount) as TotalAmount
         FROM
-            [wwi_perf].[Sale_Partition02] S
+            [wwi_perf].[Sale_Partition02_SUFFIX] S
             join [wwi].[Date] D on
                 S.TransactionDateId = D.DateId
         GROUP BY
@@ -475,7 +485,7 @@ As opposed to a standard view, a materialized view pre-computes, stores, and mai
             ,D.Month
             ,SUM(S.ProfitAmount) as TotalProfit
         FROM
-            [wwi_perf].[Sale_Partition02] S
+            [wwi_perf].[Sale_Partition02_SUFFIX] S
             join [wwi].[Date] D on
                 S.TransactionDateId = D.DateId
         GROUP BY
@@ -485,11 +495,11 @@ As opposed to a standard view, a materialized view pre-computes, stores, and mai
     ) T
     ```
 
-3. Create a materialized view that can support both queries above:
+3. Create a materialized view that can support both queries above (where `SUFFIX` is your **student ID**):
 
     ```sql
     CREATE MATERIALIZED VIEW
-        wwi_perf.mvCustomerSales
+        wwi_perf.mvCustomerSales_SUFFIX
     WITH
     (
         DISTRIBUTION = HASH( CustomerId )
@@ -503,7 +513,7 @@ As opposed to a standard view, a materialized view pre-computes, stores, and mai
         ,SUM(S.TotalAmount) as TotalAmount
         ,SUM(S.ProfitAmount) as TotalProfit
     FROM
-        [wwi_perf].[Sale_Partition02] S
+        [wwi_perf].[Sale_Partition02_SUFFIX] S
         join [wwi].[Date] D on
             S.TransactionDateId = D.DateId
     GROUP BY
@@ -513,7 +523,7 @@ As opposed to a standard view, a materialized view pre-computes, stores, and mai
         ,D.Month
     ```
 
-4. Run the following query to get an estimated execution plan (do not select `Query Plan` from the toolbar as it will try do download the query plan and open it in SQL Server Management Studio):
+4. Run the following query to get an estimated execution plan (do not select `Query Plan` from the toolbar as it will try do download the query plan and open it in SQL Server Management Studio) (where `SUFFIX` is your **student ID**):
 
     ```sql
     EXPLAIN
@@ -525,7 +535,7 @@ As opposed to a standard view, a materialized view pre-computes, stores, and mai
             ,D.Quarter
             ,SUM(S.TotalAmount) as TotalAmount
         FROM
-            [wwi_perf].[Sale_Partition02] S
+            [wwi_perf].[Sale_Partition02_SUFFIX] S
             join [wwi].[Date] D on
                 S.TransactionDateId = D.DateId
         GROUP BY
@@ -566,7 +576,7 @@ As opposed to a standard view, a materialized view pre-computes, stores, and mai
     </dsql_query>
     ```
 
-5. The same materialized view is also used to optimize the second query. Get its execution plan:
+5. The same materialized view is also used to optimize the second query. Get its execution plan (where `SUFFIX` is your **student ID**):
 
     ```sql
     EXPLAIN
@@ -578,7 +588,7 @@ As opposed to a standard view, a materialized view pre-computes, stores, and mai
             ,D.Month
             ,SUM(S.ProfitAmount) as TotalProfit
         FROM
-            [wwi_perf].[Sale_Partition02] S
+            [wwi_perf].[Sale_Partition02_SUFFIX] S
             join [wwi].[Date] D on
                 S.TransactionDateId = D.DateId
         GROUP BY
@@ -623,10 +633,10 @@ As opposed to a standard view, a materialized view pre-computes, stores, and mai
     >
     >Even if the two queries have different aggregation levels, the query optimizer is able to infer the use of the materialized view. This happens because the materialized view covers both aggregation levels (`Quarter` and `Month`) as well as both aggregation measures (`TotalAmount` and `ProfitAmount`).
 
-6. Check the materialized view overhead:
+6. Check the materialized view overhead (where `SUFFIX` is your **student ID**):
 
     ```sql
-    DBCC PDW_SHOWMATERIALIZEDVIEWOVERHEAD ( 'wwi_perf.mvCustomerSales' )
+    DBCC PDW_SHOWMATERIALIZEDVIEWOVERHEAD ( 'wwi_perf.mvCustomerSales_SUFFIX' )
     ```
 
     The results show that `BASE_VIEW_ROWS` are equal to `TOTAL_ROWS` (and hence `OVERHEAD_RATIO` is 1). The materialized view is perfectly aligned with the base view. This situation is expected to change once the underlying data starts to change.
@@ -635,7 +645,7 @@ As opposed to a standard view, a materialized view pre-computes, stores, and mai
 
     ```sql
     UPDATE
-        [wwi_perf].[Sale_Partition02]
+        [wwi_perf].[Sale_Partition02_SUFFIX]
     SET
         TotalAmount = TotalAmount * 1.01
         ,ProfitAmount = ProfitAmount * 1.01
@@ -646,210 +656,24 @@ As opposed to a standard view, a materialized view pre-computes, stores, and mai
 8. Check the materialized view overhead again:
 
     ```sql
-    DBCC PDW_SHOWMATERIALIZEDVIEWOVERHEAD ( 'wwi_perf.mvCustomerSales' )
+    DBCC PDW_SHOWMATERIALIZEDVIEWOVERHEAD ( 'wwi_perf.mvCustomerSales_SUFFIX' )
     ```
 
     ![Materialized view overhead after update](./media/lab3_materialized_view_updated.png)
 
     There is now a delta stored by the materialized view which results in `TOTAL_ROWS` being greater than `BASE_VIEW_ROWS` and `OVERHEAD_RATIO` being greater than 1.
 
-9. Rebuild the materialized view and check that the overhead ration went back to 1:
+9. Rebuild the materialized view and check that the overhead ration went back to 1 (where `SUFFIX` is your **student ID**):
 
     ```sql
-    ALTER MATERIALIZED VIEW [wwi_perf].[mvCustomerSales] REBUILD
+    ALTER MATERIALIZED VIEW [wwi_perf].[mvCustomerSales_SUFFIX] REBUILD
 
-    DBCC PDW_SHOWMATERIALIZEDVIEWOVERHEAD ( 'wwi_perf.mvCustomerSales' )
+    DBCC PDW_SHOWMATERIALIZEDVIEWOVERHEAD ( 'wwi_perf.mvCustomerSales_SUFFIX' )
     ```
 
     ![Materialized view overhead after rebuild](./media/lab3_materialized_view_rebuilt.png)
 
-### Task 3 - Use result set caching
-
-1. Check if result set caching is on in the current SQL pool:
-
-    ```sql
-    SELECT
-        name
-        ,is_result_set_caching_on
-    FROM 
-        sys.databases
-    ```
-
-    ![Check result set caching settings at the database level](./media/lab3_result_set_caching_db.png)
-
-    If `False` is returned for your SQL pool, run the following query to activate it (you need to run it on the `master` database and replace `<sql_pool> with the name of your SQL pool):
-
-    ```sql
-    ALTER DATABASE [<sql_pool>]
-    SET RESULT_SET_CACHING ON
-    ```
-
-    >**Important**
-    >
-    >The operations to create result set cache and retrieve data from the cache happen on the control node of a Synapse SQL pool instance. When result set caching is turned ON, running queries that return large result set (for example, >1GB) can cause high throttling on the control node and slow down the overall query response on the instance. Those queries are commonly used during data exploration or ETL operations. To avoid stressing the control node and cause performance issue, users should turn OFF result set caching on the database before running those types of queries.
-
-2. After activating result set caching, run a query and immediately check if it hit the cache:
-
-    ```sql
-    SELECT
-        D.Year
-        ,D.Quarter
-        ,D.Month
-        ,SUM(S.TotalAmount) as TotalAmount
-        ,SUM(S.ProfitAmount) as TotalProfit
-    FROM
-        [wwi_perf].[Sale_Partition02] S
-        join [wwi].[Date] D on
-            S.TransactionDateId = D.DateId
-    GROUP BY
-        D.Year
-        ,D.Quarter
-        ,D.Month
-    OPTION (LABEL = 'Lab03: Result set caching')
-
-    SELECT 
-        result_cache_hit
-    FROM 
-        sys.dm_pdw_exec_requests
-    WHERE 
-        request_id = 
-        (
-            SELECT TOP 1 
-                request_id 
-            FROM 
-                sys.dm_pdw_exec_requests
-            WHERE   
-                [label] = 'Lab03: Result set caching'
-            ORDER BY
-                start_time desc
-        )
-    ```
-
-    As expected, the result is `False`. Still, you can identify that, while running the query, Synapse has also cached the result set. Run the following query to get the execution steps:
-
-    ```sql
-    SELECT 
-        step_index
-        ,operation_type
-        ,location_type
-        ,status
-        ,total_elapsed_time
-        ,command
-    FROM 
-        sys.dm_pdw_request_steps
-    WHERE 
-        request_id =
-        (
-            SELECT TOP 1 
-                request_id 
-            FROM 
-                sys.dm_pdw_exec_requests
-            WHERE   
-                [label] = 'Lab03: Result set caching'
-            ORDER BY
-                start_time desc
-        )
-    ```
-
-    The execution plan reveals the building of the result set cache:
-
-    ![The building of the result set cache](./media/lab3_result_set_cache_build.png)
-
-3. You can control at the user session level the use of the result set cache. The following query shows how to deactivate and activate the result cache:
-
-    ```sql  
-    SET RESULT_SET_CACHING OFF
-
-    SELECT
-        D.Year
-        ,D.Quarter
-        ,D.Month
-        ,SUM(S.TotalAmount) as TotalAmount
-        ,SUM(S.ProfitAmount) as TotalProfit
-    FROM
-        [wwi_perf].[Sale_Partition02] S
-        join [wwi].[Date] D on
-            S.TransactionDateId = D.DateId
-    GROUP BY
-        D.Year
-        ,D.Quarter
-        ,D.Month
-    OPTION (LABEL = 'Lab03: Result set caching off')
-
-    SET RESULT_SET_CACHING ON
-
-    SELECT
-        D.Year
-        ,D.Quarter
-        ,D.Month
-        ,SUM(S.TotalAmount) as TotalAmount
-        ,SUM(S.ProfitAmount) as TotalProfit
-    FROM
-        [wwi_perf].[Sale_Partition02] S
-        join [wwi].[Date] D on
-            S.TransactionDateId = D.DateId
-    GROUP BY
-        D.Year
-        ,D.Quarter
-        ,D.Month
-    OPTION (LABEL = 'Lab03: Result set caching on')
-
-    SELECT TOP 2
-        request_id
-        ,[label]
-        ,result_cache_hit
-    FROM 
-        sys.dm_pdw_exec_requests
-    WHERE   
-        [label] in ('Lab03: Result set caching off', 'Lab03: Result set caching on')
-    ORDER BY
-        start_time desc
-    ```
-
-    The result of `SET RESULT_SET_CACHING OFF` is visible in the cache hit test results (`RESULT_CACHE_HIT` contains a `NULL` value):
-
-    ![Result cache on and off](./media/lab3_result_set_cache_off.png)
-
-4. At any moment, you can check the space used bythe results cache:
-
-    ```sql
-    DBCC SHOWRESULTCACHESPACEUSED
-    ```
-
-    ![Check the size of the result set cache](./media/lab3_result_set_cache_size.png)
-
-5. Clear the result set cache using:
-
-    ```sql
-    DBCC DROPRESULTSETCACHE
-    ```
-
-6. Finally, disable result set caching on the database using the following query (you need to run it on the `master` database and replace `<sql_pool> with the name of your SQL pool):
-
-    ```sql
-    ALTER DATABASE [<sql_pool>]
-    SET RESULT_SET_CACHING OFF
-    ```
-
-    >**Important**
-    >
-    >Make sure you disable result set caching on the SQL pool. Failing to do so will have a negative imact on the remainder of this lab, as it will skew execution times and defeat the purpose of several upcoming exercises.
-
-    >**Note**
-    >
-    >The maximum size of result set cache is 1 TB per database. The cached results are automatically invalidated when the underlying query data change.
-    >
-    >The cache eviction is managed by SQL Analytics automatically following this schedule:
-    >- Every 48 hours if the result set hasn't been used or has been invalidated.
-    >- When the result set cache approaches the maximum size.
-    >
-    >Users can manually empty the entire result set cache by using one of these options:
-    >- Turn OFF the result set cache feature for the database
-    >- Run DBCC DROPRESULTSETCACHE while connected to the database
-    >
-    >Pausing a database won't empty cached result set.
-
-### Task 4 - Create and update statistics
+### Task 3 - Create and update statistics
 
 The more the SQL pool resource knows about your data, the faster it can execute queries. After loading data into SQL pool, collecting statistics on your data is one of the most important things you can do for query optimization.
 
@@ -879,10 +703,10 @@ For example, if the optimizer estimates that the date your query is filtering on
 
     ![View automatically created statistics](./media/lab3_statistics_automated.png)
 
-3. Check if there are any statistics created for `CustomerId` from the `wwi_perf.Sale_Has` table:
+3. Check if there are any statistics created for `CustomerId` from the `wwi_perf.Sale_Hash_SUFFIX` table (where `SUFFIX` is your **student ID**):
 
     ```sql
-    DBCC SHOW_STATISTICS ('wwi_perf.Sale_Hash', CustomerId) WITH HISTOGRAM
+    DBCC SHOW_STATISTICS ('wwi_perf.Sale_Hash_SUFFIX', CustomerId) WITH HISTOGRAM
     ```
 
     You should get an error stating that statistics for `CustomerId` does not exist.
@@ -890,13 +714,13 @@ For example, if the optimizer estimates that the date your query is filtering on
 4. Create statistics for `CustomerId`:
 
     ```sql
-    CREATE STATISTICS Sale_Hash_CustomerId ON wwi_perf.Sale_Hash (CustomerId)
+    CREATE STATISTICS Sale_Hash_CustomerId ON wwi_perf.Sale_Hash_SUFFIX (CustomerId)
     ```
 
     Display the newly created statistics:
 
     ```sql
-    DBCC SHOW_STATISTICS([wwi_perf.Sale_Hash], 'Sale_Hash_CustomerId')
+    DBCC SHOW_STATISTICS([wwi_perf.Sale_Hash_SUFFIX], 'Sale_Hash_CustomerId')
     ```
 
     In the results pane, swhitch to `Chart` display and set the category column and the legend columns as presented below:
@@ -913,19 +737,19 @@ For example, if the optimizer estimates that the date your query is filtering on
     >
     >For example, if the optimizer estimates that the date your query is filtering on will return one row it will choose one plan. If it estimates that the selected date will return 1 million rows, it will return a different plan.
 
-### Task 5 - Create and update indexes
+### Task 4 - Create and update indexes
 
 Clustered Columnstore Index vs. Heap vs. Clustered and Nonclustered
 
 Clustered indexes may outperform clustered columnstore indexes when a single row needs to be quickly retrieved. For queries where a single or very few row lookup is required to perform with extreme speed, consider a cluster index or nonclustered secondary index. The disadvantage to using a clustered index is that only queries that benefit are the ones that use a highly selective filter on the clustered index column. To improve filter on other columns a nonclustered index can be added to other columns. However, each index which is added to a table adds both space and processing time to loads.
 
-1. Retrieve information about a single customer from the table with CCI:
+1. Retrieve information about a single customer from the table with CCI (where `SUFFIX` is your **student ID**):
 
     ```sql
     SELECT
         *
     FROM
-        [wwi_perf].[Sale_Hash]
+        [wwi_perf].[Sale_Hash_SUFFIX]
     WHERE
         CustomerId = 500000
     ```
@@ -938,7 +762,7 @@ Clustered indexes may outperform clustered columnstore indexes when a single row
     SELECT
         *
     FROM
-        [wwi_perf].[Sale_Index]
+        [wwi_perf].[Sale_Index_SUFFIX]
     WHERE
         CustomerId = 500000
     ```
@@ -951,18 +775,18 @@ Clustered indexes may outperform clustered columnstore indexes when a single row
     SELECT
         *
     FROM
-        [wwi_perf].[Sale_Hash]
+        [wwi_perf].[Sale_Hash_SUFFIX]
     WHERE
         CustomerId between 400000 and 400100
     ```
 
-    and then retrive the same information from the table with a clustered index:
+    and then retrieve the same information from the table with a clustered index:
 
     ```sql
     SELECT
         *
     FROM
-        [wwi_perf].[Sale_Index]
+        [wwi_perf].[Sale_Index_SUFFIX]
     WHERE
         CustomerId between 400000 and 400020
     ```
@@ -975,7 +799,7 @@ Clustered indexes may outperform clustered columnstore indexes when a single row
     SELECT
         *
     FROM
-        [wwi_perf].[Sale_Index]
+        [wwi_perf].[Sale_Index_SUFFIX]
     WHERE
         CustomerId between 400000 and 400020
         and StoreId between 2000 and 4000
@@ -986,7 +810,7 @@ Clustered indexes may outperform clustered columnstore indexes when a single row
 5. Create a non-clustered index on the `StoreId` column:
 
     ```sql
-    CREATE INDEX Store_Index on wwi_perf.Sale_Index (StoreId)
+    CREATE INDEX Store_Index on wwi_perf.Sale_Index_SUFFIX (StoreId)
     ```
 
     The creation of the index should complete in a few minutes. Once the index is created, run the previous query again. Notice the improvement in execution time resulting from the newly created non-clustered index.
