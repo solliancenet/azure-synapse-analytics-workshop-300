@@ -352,7 +352,7 @@ function Create-Dataset {
     $FileName = $null
     )
 
-    if ($FileName -eq $null) {
+    if ([string]::IsNullOrWhiteSpace($FileName)) {
         $FileName = $Name
     }
 
