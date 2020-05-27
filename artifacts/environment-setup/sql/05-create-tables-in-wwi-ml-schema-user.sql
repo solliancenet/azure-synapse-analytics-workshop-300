@@ -4,7 +4,7 @@ CREATE EXTERNAL TABLE [wwi_ml].[MLModelExt_#USER_CONTEXT#]
 )
 WITH
 (
-LOCATION='/ml/onnx-hex/#USER_CONTEXT#' ,
+LOCATION='/ml/onnx-hex' ,
 DATA_SOURCE = ModelStorage ,
 FILE_FORMAT = csv ,
 REJECT_TYPE = VALUE ,
