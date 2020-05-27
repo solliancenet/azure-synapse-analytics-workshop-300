@@ -259,7 +259,6 @@ foreach ($userContext in $userContexts) {
                 $result
         }
 
-
         Write-Information "Create wwi_poc schema in $($sqlPoolName)"
 
         $params = @{
