@@ -96,11 +96,13 @@ Since we have the Azure Key Vault setup as a linked service, we can leverage it 
 
 It is recommended to store any secrets that are part of your pipeline in Azure Key Vault. In this task you will retrieve these values using a Web activity, just to show the mechanics. The second part of this task demonstrates using a Web activity in the pipeline to retrieve a secret from the Key Vault.
 
+> **Important note:** Throughout the labs, you will be asked to replace `SUFFIX` with your student ID value. This ensures unique names for any artifacts you create, in case you are sharing a Synapse Analytics workspace with others. Your student ID is the set of numbers at the end of your assigned username. For example, if your username is `odl_user_104871`, your student ID is `104871`.
+
 1. Open the `asakeyvaultXX` resource, and select **Secrets** from the left menu. From the top toolbar, select **+ Generate/Import**.
 
    ![In Azure Key Vault, Secrets is selected from the left menu, and + Generate/Import is selected from the top toolbar.](media/lab5_pipelinekeyvaultsecretmenu.png)
 
-2. Create a secret, with the name **PipelineSecret** and assign it a value of **IsNotASecret**, and select the **Create** button.
+2. Create a secret, with the name **PipelineSecret-SUFFIX** (where `SUFFIX` is your **student ID**) and assign it a value of **IsNotASecret**, and select the **Create** button.
 
    ![The Create a secret form is displayed populated with the specified values.](media/lab5_keyvaultcreatesecretforpipeline.png)
 
@@ -181,7 +183,7 @@ It is important to identify data columns of that hold sensitive information. Typ
 
    ![In Azure Synapse Studio, the Develop item is selected from the left menu.](media/lab5_synapsestudiodevelopmenuitem.png)
 
-2. From the **Develop** menu, expand the **SQL scripts** section, and select **Lab 05 - Exercise 3 - Column Level Security**.
+2. From the **Develop** menu, expand the **SQL scripts** section, and select **Lab 05 - Exercise 3 - Column Level Security - SUFFIX** (where `SUFFIX` is your **student ID**).
 
    ![In Synapse Studio the develop menu is displayed with SQL Scripts section expanded, Lab 05 - Exercise 3 - Column Level Security is selected from the context menu.](media/lab5_synapsecolumnlevel.png)
 
@@ -201,7 +203,7 @@ It is important to identify data columns of that hold sensitive information. Typ
 
    ![In Azure Synapse Studio, the Develop item is selected from the left menu.](media/lab5_synapsestudiodevelopmenuitem.png)
 
-2. From the **Develop** menu, expand the **SQL scripts** section, and select **Lab05 - Exercise 3 - Row Level Security**.
+2. From the **Develop** menu, expand the **SQL scripts** section, and select **Lab05 - Exercise 3 - Row Level Security - SUFFIX** (where `SUFFIX` is your **student ID**).
 
     ![In Synapse Studio the develop menu is displayed with SQL Scripts section expanded, Lab05 - Exercise 3 - Row Level Security is selected from the context menu.](media/lab5_synapserowlevelsecurity.png)
 
@@ -221,7 +223,7 @@ It is important to identify data columns of that hold sensitive information. Typ
 
    ![In Azure Synapse Studio, the Develop item is selected from the left menu.](media/lab5_synapsestudiodevelopmenuitem.png)
 
-2. From the **Develop** menu, expand the **SQL scripts** section, and select **Lab05 - Exercise 3 - Dynamic Data Masking**.
+2. From the **Develop** menu, expand the **SQL scripts** section, and select **Lab05 - Exercise 3 - Dynamic Data Masking - SUFFIX** (where `SUFFIX` is your **student ID**)
   
    ![In Synapse Studio the develop menu is displayed with SQL Scripts section expanded, Lab05 - Exercise 3 - Dynamic Data Masking is selected from the context menu.](media/lab5_synapsedynamicdatamasking.png)
 
