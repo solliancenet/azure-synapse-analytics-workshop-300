@@ -186,7 +186,7 @@ foreach ($userContext in $userContexts) {
         foreach ($dataset in $datasets.Keys) {
                 $datasetName = "$($datasets[$dataset])_$($userContext)"
                 Write-Information "Creating dataset $($dataset)"
-                $result = Create-Dataset -DatasetsPath $datasetsPath -WorkspaceName $workspaceName -Name $datasetName -LinkedServiceName $datasets[$dataset] -FileName = $dataset
+                $result = Create-Dataset -DatasetsPath $datasetsPath -WorkspaceName $workspaceName -Name $datasetName -LinkedServiceName $datasets[$dataset] -Parameters = $null -FileName = $dataset
                 Wait-ForOperation -WorkspaceName $workspaceName -OperationId $result.operationId
         }
 
