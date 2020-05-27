@@ -185,14 +185,16 @@ foreach ($userContext in $userContexts) {
 
         foreach ($dataset in $datasets.Keys) {
                 $datasetName = "$($datasets[$dataset])_$($userContext)"
-                Write-Information "Creating dataset $($dataset)"
+                Write-Information "Creating dataset $($datasetName)"
                 $result = Create-Dataset -DatasetsPath $datasetsPath -WorkspaceName $workspaceName -Name $datasetName -LinkedServiceName $datasets[$dataset] -Parameters $null -FileName $dataset
                 Wait-ForOperation -WorkspaceName $workspaceName -OperationId $result.operationId
         }
 
         Write-Information "Create pipelines for Lab 08"
 
-        $params = @{}
+        $params = @{
+                USER_CONTEXT = $userContext
+        }
         $workloadPipelines = [ordered]@{
                 execute_business_analyst_queries_user = "Lab 08 - Execute Business Analyst Queries - $($userContext)"
                 execute_data_analyst_and_ceo_queries_user = "Lab 08 - Execute Data Analyst and CEO Queries - $($userContext)"
