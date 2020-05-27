@@ -899,7 +899,7 @@ function Create-SQLScript {
 
     $query = ConvertFrom-Json (ConvertTo-Json $query)
 
-    $jsonItem.properties.content.query = $query.value
+    $jsonItem.properties.content.query = $query
     $item = ConvertTo-Json $jsonItem -Depth 100
 
     $uri = "https://$($WorkspaceName).dev.azuresynapse.net/sqlscripts/$($Name)?api-version=2019-06-01-preview"
