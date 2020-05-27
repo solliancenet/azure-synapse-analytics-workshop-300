@@ -4,22 +4,24 @@
 
 ### Task 1 - Analyze the space used by tables
 
-1. Run the following DBCC command:
+> **Important note:** Throughout the labs, you will be asked to replace `SUFFIX` with your student ID value. This ensures unique names for any artifacts you create, in case you are sharing a Synapse Analytics workspace with others. Your student ID is the set of numbers at the end of your assigned username. For example, if your username is `odl_user_104871`, your student ID is `104871`.
+
+1. Run the following DBCC command (where `SUFFIX` is your **student ID**):
 
     ```sql
-    DBCC PDW_SHOWSPACEUSED('wwi_perf.Sale_Hash');
+    DBCC PDW_SHOWSPACEUSED('wwi_perf.Sale_Hash_SUFFIX');
     ```
 
     ![Show table space usage](./media/lab3_table_space_usage.png)
 
-2. Analyze the number of rows in each distribution. Those numbers should be as even as possible. You can see from the results that rows are equally distributed across distributions. Let's dive a bit more into this analysis. Use the following query to get customers with the most sale transaction items:
+2. Analyze the number of rows in each distribution. Those numbers should be as even as possible. You can see from the results that rows are equally distributed across distributions. Let's dive a bit more into this analysis. Use the following query to get customers with the most sale transaction items (where `SUFFIX` is your **student ID**):
 
     ```sql
-    SELECT TOP 1000 
+    SELECT TOP 1000
         CustomerId,
         count(*) as TransactionItemsCount
     FROM
-        [wwi_perf].[Sale_Hash]
+        [wwi_perf].[Sale_Hash_SUFFIX]
     GROUP BY
         CustomerId
     ORDER BY
@@ -31,20 +33,20 @@
     Now find the customers with the least sale transaction items:
 
     ```sql
-    SELECT TOP 1000 
+    SELECT TOP 1000
         CustomerId,
         count(*) as TransactionItemsCount
     FROM
-        [wwi_perf].[Sale_Hash]
+        [wwi_perf].[Sale_Hash_SUFFIX]
     GROUP BY
         CustomerId
     ORDER BY
         count(*) ASC
     ```
 
-    ![Customers with most sale transaction items](./media/lab4_data_skew_2.png)
+    ![Customers with least sale transaction items](./media/lab4_data_skew_2.png)
 
-    Notice the largest number of transaction items is 9465 and the smallest is 184.
+    Notice the largest number of transaction items is 1715 and the smallest is 16.
 
     Let's find now the distribution of per-customer transaction item counts. Run the following query:
 
@@ -56,9 +58,9 @@
         (
             SELECT
                 CustomerId,
-                (count(*) - 184) / 100 as TransactionItemsCountBucket
+                (count(*) - 16) / 100 as TransactionItemsCountBucket
             FROM
-                [wwi_perf].[Sale_Hash]
+                [wwi_perf].[Sale_Hash_SUFFIX]
             GROUP BY
                 CustomerId
         ) T
@@ -76,10 +78,10 @@
 
 ### Task 2 - Use a more advanced approach to understand table space usage
 
-1. Run the following script to create the `vTableSizes` view:
+1. Run the following script to create the `vTableSizes` view (where `SUFFIX` is your **student ID**):
 
     ```sql
-    CREATE VIEW [wwi_perf].[vTableSizes]
+    CREATE VIEW [wwi_perf].[vTableSizes_SUFFIX]
     AS
     WITH base
     AS
@@ -206,7 +208,7 @@
     sys.dm_pdw_nodes | Holds information about the nodes from the SQL pool. Filtered to include only compute nodes (`type` = `COMPUTE`).
     sys.dm_pdw_nodes_db_partition_stats | Returns page and row-count information for every partition in the current database.
 
-2. Run the following script to view the details about the structure of the tables in the `wwi_perf` schema:
+2. Run the following script to view the details about the structure of the tables in the `wwi_perf` schema (where `SUFFIX` is your **student ID**):
 
     ```sql
     SELECT
@@ -223,7 +225,7 @@
     ,    SUM(index_space_GB)            as table_index_space_GB
     ,    SUM(unused_space_GB)           as table_unused_space_GB
     FROM
-        [wwi_perf].[vTableSizes]
+        [wwi_perf].[vTableSizes_SUFFIX]
     WHERE
         schema_name = 'wwi_perf'
     GROUP BY
@@ -243,16 +245,14 @@
 
     Notice the significant difference between the space used by `CLUSTERED COLUMNSTORE` and `HEAP` or `CLUSTERED` tables. This provides a clear indication on the significant advantages columnstore indexes have.
 
-    Also notice the slight increase of storage space for ordered CCI table (`Sale_Hash_Ordered`).
-
 ## Exercise 2 - Understand column store storage details
 
 ### Task 1 - Create view for column store row group stats
 
-1. Run the following query to create the `vColumnStoreRowGroupStats`:
+1. Run the following query to create the `vColumnStoreRowGroupStats` (where `SUFFIX` is your **student ID**):
 
     ```sql
-    create view [wwi_perf].[vColumnStoreRowGroupStats]
+    create view [wwi_perf].[vColumnStoreRowGroupStats_SUFFIX]
     as
     with cte
     as
@@ -302,15 +302,15 @@
 
 ### Task 2 - Explore column store storage details
 
-1. Explore the statistics of the columnstore for the `Sale_Partition02` table using the following query:
+1. Explore the statistics of the columnstore for the `Sale_Partition02` table using the following query (where `SUFFIX` is your **student ID**):
 
     ```sql
     SELECT
         *
     FROM
-        [wwi_perf].[vColumnStoreRowGroupStats]
+        [wwi_perf].[vColumnStoreRowGroupStats_SUFFIX]
     WHERE
-        Logical_Table_Name = 'Sale_Partition02'
+        Logical_Table_Name = 'Sale_Partition02_SUFFIX'
     ```
 
 2. Explore the results of the query:
@@ -319,28 +319,28 @@
 
     Browse through the results and get an overview of the rowgroup states. Notice the `COMPRESSED` and `OPEN` states of some of the row groups.
 
-3. Explore the statistics of the columnstore for the `Sale_Hash_Ordered` table using the same query:
+3. Explore the statistics of the columnstore for the `Sale_Hash_Ordered` table using the same query (where `SUFFIX` is your **student ID**):
 
     ```sql
     SELECT
         *
     FROM
-        [wwi_perf].[vColumnStoreRowGroupStats]
+        [wwi_perf].[vColumnStoreRowGroupStats_SUFFIX]
     WHERE
-        Logical_Table_Name = 'Sale_Hash_Ordered'
+        Logical_Table_Name = 'Sale_Hash_Ordered_SUFFIX'
     ```
 
 4. Explore the results of the query:
 
     ![Column store row group statistics for Sale_Hash_Ordered](./media/lab4_column_store_row_groups_2.png)
 
-    There is a significant difference in the rowgroup states from the previous one. This highlight one of the potential advantages of ordered CCIs.
+    There is a significant difference in the rowgroup states from the previous one. This highlights one of the potential advantages of ordered CCIs.
 
 ## Exercise 3 - Study the impact of materialized views
 
 ### Task 1 - Analyze the execution plan of a query
 
-1. Run again the query to find the number of customers in each bucket of per-customer transaction items counts:
+1. Run again the query to find the number of customers in each bucket of per-customer transaction items counts (where `SUFFIX` is your **student ID**):
 
     ```sql
     SELECT
@@ -352,7 +352,7 @@
                 CustomerId,
                 (count(*) - 184) / 100 as TransactionItemsCountBucket
             FROM
-                [wwi_perf].[Sale_Hash]
+                [wwi_perf].[Sale_Hash_SUFFIX]
             GROUP BY
                 CustomerId
         ) T
@@ -362,7 +362,7 @@
         T.TransactionItemsCountBucket
     ```
 
-2. Improve the query by adding support to calculate the lower margin of the first per-customer transactions items count bucket:
+2. Improve the query by adding support to calculate the lower margin of the first per-customer transactions items count bucket (where `SUFFIX` is your **student ID**):
 
     ```sql
     SELECT
@@ -382,14 +382,14 @@
                             SELECT
                                 COUNT(*) as TransactionItemsCount
                             FROM
-                                [wwi_perf].[Sale_Hash]
+                                [wwi_perf].[Sale_Hash_SUFFIX]
                             GROUP BY
                                 CustomerId
                         ) X
                     )
                 ) / 100 as TransactionItemsCountBucket
             FROM
-                [wwi_perf].[Sale_Hash]
+                [wwi_perf].[Sale_Hash_SUFFIX]
             GROUP BY
                 CustomerId
         ) T
@@ -401,7 +401,7 @@
 
 ### Task 2 - Improve the execution plan of the query with a materialized view
 
-1. Run the query with the `EXPLAIN` directive (note the `WITH_RECOMMENDATIONS` option as well):
+1. Run the query with the `EXPLAIN` directive (note the `WITH_RECOMMENDATIONS` option as well) (where `SUFFIX` is your **student ID**):
 
     ```sql
     EXPLAIN WITH_RECOMMENDATIONS
@@ -422,14 +422,14 @@
                             SELECT 
                                 COUNT(*) as TransactionItemsCount
                             FROM 
-                                [wwi_perf].[Sale_Hash] 
+                                [wwi_perf].[Sale_Hash_SUFFIX] 
                             GROUP BY 
                                 CustomerId 
                         ) X 
                     )
                 ) / 100 as TransactionItemsCountBucket
             FROM
-                [wwi_perf].[Sale_Hash]
+                [wwi_perf].[Sale_Hash_SUFFIX]
             GROUP BY
                 CustomerId
         ) T
@@ -538,11 +538,11 @@
     </dsql_query>
     ```
 
-3. Create the suggested materialized view:
+3. Create the suggested materialized view (where `SUFFIX` is your **student ID**):
 
     ```sql
     CREATE MATERIALIZED VIEW
-        mvTransactionItemsCounts
+        mvTransactionItemsCounts_SUFFIX
     WITH
     (
         DISTRIBUTION = HASH([CustomerId])
@@ -552,7 +552,7 @@
         CustomerId
         ,COUNT(*) AS ItemsCount
     FROM
-        [wwi_perf].[Sale_Hash]
+        [wwi_perf].[Sale_Hash_SUFFIX]
     GROUP BY
         CustomerId
     ```
@@ -578,14 +578,14 @@
                             SELECT 
                                 COUNT(*) as TransactionItemsCount
                             FROM 
-                                [wwi_perf].[Sale_Hash] 
+                                [wwi_perf].[Sale_Hash_SUFFIX] 
                             GROUP BY 
                                 CustomerId 
                         ) X 
                     )
                 ) / 100 as TransactionItemsCountBucket
             FROM
-                [wwi_perf].[Sale_Hash]
+                [wwi_perf].[Sale_Hash_SUFFIX]
             GROUP BY
                 CustomerId
         ) T
@@ -732,21 +732,21 @@ Loading data into a non-empty table with a clustered index can often contain a m
 
 ### Task 2 - Optimizing a delete operation
 
-1. Check the number of transaction items for customers with ids lower than 900000 using the following query:
+1. Check the number of transaction items for customers with ids lower than 900000 using the following query (where `SUFFIX` is your **student ID**):
 
     ```sql
     SELECT
         COUNT_BIG(*) as TransactionItemsCount
     FROM
-        [wwi_perf].[Sale_Hash]
+        [wwi_perf].[Sale_Hash_SUFFIX]
     WHERE
         CustomerId < 900000
     ```
 
-2. Implement a minimal logging approach to delete transaction items for customers with ids lower than 900000. Use the following CTAS query to isolate the transaction items that should be kept:
+2. Implement a minimal logging approach to delete transaction items for customers with ids lower than 900000. Use the following CTAS query to isolate the transaction items that should be kept (where `SUFFIX` is your **student ID**):
 
     ```sql
-    CREATE TABLE [wwi_perf].[Sale_Hash_v2]
+    CREATE TABLE [wwi_perf].[Sale_Hash_v2_SUFFIX]
     WITH
     (
         DISTRIBUTION = ROUND_ROBIN,
@@ -756,18 +756,18 @@ Loading data into a non-empty table with a clustered index can often contain a m
     SELECT
         *
     FROM
-        [wwi_perf].[Sale_Hash]
+        [wwi_perf].[Sale_Hash_SUFFIX]
     WHERE
         CustomerId >= 900000
     ```
 
-    The query should execute within a few minutes. All that would remain to complete the process would be to delete the `Sale_Heap` table and rename `Sale_Heap_v2` to `Sale_Heap`.
+    The query should execute within 30-60 seconds. All that would remain to complete the process would be to delete the `Sale_Heap` table and rename `Sale_Heap_v2` to `Sale_Heap`.
 
 3. Compare the previous operation with a classical delete:
 
     ```sql
     DELETE
-        [wwi_perf].[Sale_Hash]
+        [wwi_perf].[Sale_Hash_SUFFIX]
     WHERE
         CustomerId < 900000
     ```
