@@ -1,9 +1,8 @@
 # Activity 06: Monitor & Manage
 
-
 ## Audience Poll 1
 
-Q: You want to use a UI to review the assigned workload group and importance for a running SQL query. Which option should you use (pick only one)? 
+Q: You want to use a UI to review the assigned workload group and importance for a running SQL query. Which option should you use (pick only one)?
 
 A) Log Analytics
 
@@ -102,6 +101,3 @@ A: Answer (C) is correct. By default Azure Synapse Analytics optimizes for throu
 | Workload Importance - Impact on concurrent requests with idfferent resource classes | Under the same importance, Azure Synapse Analytics optimizes for throughput. When mixed size requests (such as smallrc or mediumrc) are queued, Synapse will choose the earliest arriving request that fits within the available resources. If workload importance is applied, the highest importance request is scheduled next. |
 | Workload Importance - Monitoring assignment of importance to requests | Use `sys.dm_pdw_exec_requests` dynamic management view and examine the `importance` column. |
 | Concurrency | To ensure each query has enough resources to execute efficiently, Azure Synapse Analytics tracks resource utilization by assigning concurrency slots to each query. The system puts queries into a queue based on importance and concurrency slots. Queries wait in the queue until enough concurrency slots are available. Importance and concurrency slots determine CPU prioritization. |
-
-
-
