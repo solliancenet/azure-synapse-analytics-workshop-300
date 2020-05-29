@@ -4,7 +4,7 @@ In this activity, you will work with your team to optimize the peformance of a q
 
 # Team Challenge 
 
-WWI wants you to prove your ability to optimize queries using their data. They have provided the following query:
+WWI wants you to prove your ability to optimize queries using their data. They have provided the following query (where `SUFFIX` is your **student ID**):
 
 ``` SQL
 SELECT
@@ -16,7 +16,7 @@ SELECT
     ,AVG(FS.ProfitAmount) as AvgProfitAmount
     ,COUNT(DISTINCT FS.StoreId) as DistinctStores
 FROM
-    wwi_perf.Sale_Heap FS
+    wwi_perf.Sale_Heap_SUFFIX FS
 GROUP BY
     FS.CustomerId
 
