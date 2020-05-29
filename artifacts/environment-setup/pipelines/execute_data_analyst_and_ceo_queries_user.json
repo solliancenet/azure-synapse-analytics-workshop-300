@@ -9,7 +9,7 @@
                 "userProperties": [],
                 "typeProperties": {
                     "items": {
-                        "value": "@range(1,1000)",
+                        "value": "@range(1,4000)",
                         "type": "Expression"
                     },
                     "activities": [
@@ -47,7 +47,7 @@
                 "userProperties": [],
                 "typeProperties": {
                     "items": {
-                        "value": "@range(1,1000)",
+                        "value": "@range(1,4000)",
                         "type": "Expression"
                     },
                     "activities": [
