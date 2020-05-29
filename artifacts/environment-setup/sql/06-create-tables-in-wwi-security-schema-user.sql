@@ -1,7 +1,7 @@
 
-create user [CEO_#USER_CONTEXT#] without login
-create user [DataAnalystMiami_#USER_CONTEXT#] without login
-create user [DataAnalystSanDiego_#USER_CONTEXT#] without login
+create user [CEO] without login
+create user [DataAnalystMiami] without login
+create user [DataAnalystSanDiego] without login
 
 IF OBJECT_ID(N'[wwi_security].[CustomerInfo_#USER_CONTEXT#]', N'U') IS NOT NULL   
 DROP TABLE [wwi_security].[CustomerInfo_#USER_CONTEXT#]

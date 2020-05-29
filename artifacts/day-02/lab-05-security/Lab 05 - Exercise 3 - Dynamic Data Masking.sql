@@ -36,19 +36,19 @@
         AND tbl.name ='CustomerInfo_#USER_CONTEXT#';
 
     -- Step:5 Now, let us grant SELECT permission to 'DataAnalystMiami' on the 'CustomerInfo' table.
-   GRANT SELECT ON wwi_security.CustomerInfo_#USER_CONTEXT# TO DataAnalystMiami_#USER_CONTEXT#;  
+   GRANT SELECT ON wwi_security.CustomerInfo_#USER_CONTEXT# TO DataAnalystMiami;  
 
     -- Step:6 Logged in as  'DataAnalystMiami' let us execute the select query and view the result.
-    EXECUTE AS USER = 'DataAnalystMiami_#USER_CONTEXT#';  
+    EXECUTE AS USER = 'DataAnalystMiami';  
     SELECT * FROM wwi_security.CustomerInfo_#USER_CONTEXT#;
 
     -- Step:7 Let us remove the data masking using UNMASK permission
-    GRANT UNMASK TO DataAnalystMiami_#USER_CONTEXT#;
-    EXECUTE AS USER = 'DataAnalystMiami_#USER_CONTEXT#';  
+    GRANT UNMASK TO DataAnalystMiami;
+    EXECUTE AS USER = 'DataAnalystMiami';  
     SELECT *
     FROM wwi_security.CustomerInfo_#USER_CONTEXT#;
     revert;
-    REVOKE UNMASK TO DataAnalystMiami_#USER_CONTEXT#;  
+    REVOKE UNMASK TO DataAnalystMiami;  
 
     ----step:8 Reverting all the changes back to as it was.
     ALTER TABLE wwi_security.CustomerInfo_#USER_CONTEXT#

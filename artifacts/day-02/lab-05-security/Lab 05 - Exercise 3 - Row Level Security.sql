@@ -30,7 +30,7 @@ CREATE FUNCTION wwi_security.fn_securitypredicate_#USER_CONTEXT#(@Analyst AS sys
 WITH SCHEMABINDING  
 AS  
     RETURN SELECT 1 AS fn_securitypredicate_result
-    WHERE @Analyst = USER_NAME() OR USER_NAME() = 'CEO_#USER_CONTEXT#'
+    WHERE @Analyst = USER_NAME() OR USER_NAME() = 'CEO'
 GO
 -- Now we define security policy that adds the filter predicate to the Sale table. This will filter rows based on their login name.
 CREATE SECURITY POLICY SalesFilter_#USER_CONTEXT#  
@@ -39,22 +39,22 @@ ON wwi_security.Sale_#USER_CONTEXT#
 WITH (STATE = ON);
 
 ------ Allow SELECT permissions to the Sale Table.------
-GRANT SELECT ON wwi_security.Sale_#USER_CONTEXT# TO CEO_#USER_CONTEXT#, DataAnalystMiami_#USER_CONTEXT#, DataAnalystSanDiego_#USER_CONTEXT#;
+GRANT SELECT ON wwi_security.Sale_#USER_CONTEXT# TO CEO, DataAnalystMiami, DataAnalystSanDiego;
 
 -- Step:3 Let us now test the filtering predicate, by selecting data from the Sale table as 'DataAnalystMiami' user.
-EXECUTE AS USER = 'DataAnalystMiami_#USER_CONTEXT#' 
+EXECUTE AS USER = 'DataAnalystMiami' 
 SELECT * FROM wwi_security.Sale_#USER_CONTEXT#;
 revert;
 -- As we can see, the query has returned rows here Login name is DataAnalystMiami
 
 -- Step:4 Let us test the same for  'DataAnalystSanDiego' user.
-EXECUTE AS USER = 'DataAnalystSanDiego_#USER_CONTEXT#';
+EXECUTE AS USER = 'DataAnalystSanDiego';
 SELECT * FROM wwi_security.Sale_#USER_CONTEXT#;
 revert;
 -- RLS is working indeed.
 
 -- Step:5 The CEO should be able to see all rows in the table.
-EXECUTE AS USER = 'CEO_#USER_CONTEXT#';  
+EXECUTE AS USER = 'CEO';  
 SELECT * FROM wwi_security.Sale_#USER_CONTEXT#;
 revert;
 -- And he can.
