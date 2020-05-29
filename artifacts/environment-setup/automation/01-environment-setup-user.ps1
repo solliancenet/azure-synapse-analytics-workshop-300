@@ -79,12 +79,16 @@ $global:tokenTimes = [ordered]@{
 }
 
 $userContexts = @( $userName.Split("@")[0].Split("_")[2] )
+$userNames = @( $userName )
 
 if ([System.IO.File]::Exists("C:\LabFiles\AzureCreds2.ps1")) {
         
         . C:\LabFiles\AzureCreds2.ps1     
         $userContexts += $AzureUserName2.Split("@")[0].Split("_")[2]
+        $userNames += $AzureUserName2
 }
+
+$count = 0
 
 Write-Information "Found $($userContexts.Count) user context(s): $([System.String]::Join(", ", $userContexts))"
 
@@ -112,7 +116,7 @@ foreach ($userContext in $userContexts) {
         Write-Information "Create SQL users and role assignments in $($sqlPoolName) $userName"
 
         $params = @{ 
-                USER_NAME = $userName
+                USER_NAME = $userNames[$count]
                 USER_CONTEXT = $userContext
         }
         $result = Execute-SQLScriptFile -SQLScriptsPath $sqlScriptsPath -WorkspaceName $workspaceName -SQLPoolName $sqlPoolName -FileName "02-create-users-user" -Parameters $params
@@ -333,6 +337,8 @@ foreach ($userContext in $userContexts) {
                 $result = Delete-ASAObject -WorkspaceName $workspaceName -Category "datasets" -Name $dataset
                 Wait-ForOperation -WorkspaceName $workspaceName -OperationId $result.operationId
         }
-
+        
+        $count += 1
+        
         Write-Information "Finished processing user context $($userContext)"
 }
