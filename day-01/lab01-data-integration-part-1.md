@@ -581,7 +581,7 @@ PolyBase requires the following elements:
 
 2. Select **Run** from the toolbar menu to execute the SQL command.
 
-3. In the query window, replace the script with the following to create the external file format and external data table. Notice that we defined `TransactionId` as an `nvarchar(36)` field instead of `uniqueidentifier`. This is because external tables do not currently support `uniqueidentifier` columns:
+3. In the query window, replace the script with the following to create the external file format and external data table. Notice that we defined `TransactionId` as an `nvarchar(36)` field instead of `uniqueidentifier`. This is because external tables do not currently support `uniqueidentifier` columns (replace `SUFFIX` with your **student ID**):
 
     ```sql
     IF NOT EXISTS (SELECT * FROM sys.external_file_formats where name = 'ParquetFormat')
@@ -600,9 +600,9 @@ PolyBase requires the following elements:
     END
     GO
 
-    IF NOT EXISTS (SELECT * FROM sys.external_tables where name = 'Sales')
+    IF NOT EXISTS (SELECT * FROM sys.external_tables where name = 'Sales_SUFFIX')
     BEGIN
-        CREATE EXTERNAL TABLE [wwi_external].Sales
+        CREATE EXTERNAL TABLE [wwi_external].Sales_SUFFIX
             (
                 [TransactionId] [nvarchar](36)  NOT NULL,
                 [CustomerId] [int]  NOT NULL,
@@ -635,7 +635,7 @@ PolyBase requires the following elements:
     ```sql
     INSERT INTO [wwi_staging].[SaleHeap_SUFFIX]
     SELECT *
-    FROM [wwi_external].[Sales]
+    FROM [wwi_external].[Sales_SUFFIX]
     ```
 
 6. Select **Run** from the toolbar menu to execute the SQL command. It will take a few minutes to execute this command. **Take note** of how long it took to execute this query.
