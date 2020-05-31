@@ -251,11 +251,9 @@ $container = Get-AzCosmosDBSqlContainer `
         -AccountName $cosmosDbAccountName -DatabaseName $cosmosDbDatabase `
         -Name $cosmosDbContainer
 
-Set-AzCosmosDBSqlContainer -ResourceGroupName $resourceGroupName `
+Update-AzCosmosDBSqlContainerThroughput -ResourceGroupName $resourceGroupName `
         -AccountName $cosmosDbAccountName -DatabaseName $cosmosDbDatabase `
-        -Name $cosmosDbContainer -Throughput 10000 `
-        -PartitionKeyKind $container.Resource.PartitionKey.Kind `
-        -PartitionKeyPath $container.Resource.PartitionKey.Paths
+        -Name $cosmosDbContainer -Throughput 10000
 
 $name = "wwi02_online_user_profiles_01_adal"
 Write-Information "Create dataset $($name)"
@@ -294,11 +292,9 @@ $container = Get-AzCosmosDBSqlContainer `
         -AccountName $cosmosDbAccountName -DatabaseName $cosmosDbDatabase `
         -Name $cosmosDbContainer
 
-Set-AzCosmosDBSqlContainer -ResourceGroupName $resourceGroupName `
+Update-AzCosmosDBSqlContainerThroughput -ResourceGroupName $resourceGroupName `
         -AccountName $cosmosDbAccountName -DatabaseName $cosmosDbDatabase `
-        -Name $cosmosDbContainer -Throughput 400 `
-        -PartitionKeyKind $container.Resource.PartitionKey.Kind `
-        -PartitionKeyPath $container.Resource.PartitionKey.Paths
+        -Name $cosmosDbContainer -Throughput 400
 
 $name = "Setup - Import User Profile Data into Cosmos DB"
 Write-Information "Delete pipeline $($name)"

@@ -29,7 +29,7 @@
     "defaultDataLakeStorageAccountUrl": "[concat('https://', variables('adlsStorageAccountName'), '.dfs.core.windows.net')]",
     "sparkAutoScaleEnabled": "true",
     "sparkMinNodeCount": "3",
-    "sparkMaxNodeCount": "4",
+    "sparkMaxNodeCount": "8",
     "sparkNodeCount": "0",
     "sparkNodeSizeFamily": "MemoryOptimized",
     "sparkNodeSize": "Small",

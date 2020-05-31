@@ -28,7 +28,9 @@ All of the steps are performed within your Azure Synapse Analytics Studio.
 
 ## Exercise 1 - Training models
 
-Open the `Lab 06 - Machine Learning` notebook (located in the `Develop` hub, under `Notebooks` in Synapse Studio) and run it step by step to complete this exercise. Some of the most important tasks you will perform are:
+> **Important note:** Throughout the labs, you will be asked to replace `SUFFIX` with your student ID value. This ensures unique names for any artifacts you create, in case you are sharing a Synapse Analytics workspace with others. Your student ID is the set of numbers at the end of your assigned username. For example, if your username is `odl_user_104871`, your student ID is `104871`.
+
+Open the **Lab 06 - Machine Learning - SUFFIX** (where `SUFFIX` is your **student ID**) notebook (located in the `Develop` hub, under `Notebooks` in Synapse Studio) and run it step by step to complete this exercise. Some of the most important tasks you will perform are:
 
 - Exploratory data analysis (basic stats)
 - Use PCA for dimensionality reduction
@@ -37,11 +39,12 @@ Open the `Lab 06 - Machine Learning` notebook (located in the `Develop` hub, und
 
 >**IMPORTANT NOTE**
 >
->There are cases when the language magic does not work properly in notebook cells. Ensure the following language options are set when running each cell in the notebook:
->- *Spark (Scala)* - for cells 7 and 28
->- *PySpark (Python)* - for all other cells
+> There are cases when the language magic does not work properly in notebook cells. Ensure the following language options are set when running each cell in the notebook:
 >
->If you are encountering errors related to the language magic in a cell, remove the language magic, set the language of the cell according to the guidance above, and re-run the cell.
+> - *Spark (Scala)* - for cells 7 and 30
+> - *PySpark (Python)* - for all other cells
+>
+> If you are encountering errors related to the language magic in a cell, remove the language magic, set the language of the cell according to the guidance above, and re-run the cell.
 
 Please note that each of these tasks will be addressed through several cells in the notebook.
 
@@ -51,7 +54,7 @@ Please note that each of these tasks will be addressed through several cells in 
 
 In this task, you will explore the model registration process in Azure Synapse Analytics that enables trained model for use from T-SQL. This task picks up where you left off, with the ONNX model being made available in Azure Storage.
 
-1. One step that is not shown by the notebook is an offline step that converts the ONNX model to hexadecimal. The resulting hex encoded model is also upload to Azure Storage. This conversion is currently performed with [this PowerShell script](https://github.com/solliancenet/azure-synapse-analytics-workshop-400/raw/master/artifacts/day-03/lab-06-machine-learning/convert-to-hex.ps1), but could be automated using any scripting platform.
+1. One step that is not shown by the notebook is an offline step that converts the ONNX model to hexadecimal. The resulting hex encoded model is also upload to Azure Storage. This conversion is currently performed with [this PowerShell script](https://github.com/solliancenet/azure-synapse-analytics-workshop-300/raw/master/artifacts/day-03/lab-06-machine-learning/convert-to-hex.ps1), but could be automated using any scripting platform.
 
 2. Open Synapse Analytics Studio, and then navigate to the `Data` hub.
 
@@ -59,20 +62,20 @@ In this task, you will explore the model registration process in Azure Synapse A
 
    ![Showing the context menu, selecting New SQL Script, Empty Script](media/lab06-new-sql-script.png "Create new script")
 
-4. Replace the contents of this script with following:
+4. Replace the contents of this script with following (where `SUFFIX` is your **student ID**):
 
     ```sql
     SELECT
         *
     FROM
-        [wwi_ml].[MLModelExt]
+        [wwi_ml].[MLModelExt_SUFFIX]
     ```
 
     The result shows your persisted ONNX model in hexadecimal format:
 
     ![Persisted ONNX model in hexadecimal format](./media/lab06-persisted-model.png)
 
-5. `MLModelExt` is an external table that maps to the data lake location where the trained model was persisted (and then converted to hexadecimal format). Take a moment to read through the code that was used to create the external table (you don't need to run this code as it was already run during the deployment of your environment):
+5. `MLModelExt` is an external table that maps to the data lake location where the trained model was persisted (and then converted to hexadecimal format). Take a moment to read through the code that was used to create the external table (**you don't need to run this code** as it was already run during the deployment of your environment):
 
     ``` sql
     CREATE MASTER KEY
@@ -135,13 +138,13 @@ In this task, you will explore the model registration process in Azure Synapse A
     GO
     ```
 
-6. Import the persisted ONNX model in hexadecimal format into the main models table (to be later used with the `PREDICT` function):
+6. Import the persisted ONNX model in hexadecimal format into the main models table (to be later used with the `PREDICT` function), where `SUFFIX` is your **student ID**:
 
     ```sql
     -- Register the model by inserting it into the table.
 
     INSERT INTO
-        [wwi_ml].[MLModel]
+        [wwi_ml].[MLModel_SUFFIX]
     SELECT
         Model, 'Product Seasonality Classifier'
     FROM
@@ -158,13 +161,13 @@ In this task, you will author a T-SQL query that uses the previously trained mod
 
    ![Showing the context menu, selecting New SQL Script, Empty Script](media/lab06-new-sql-script.png "Create new script")
 
-3. Replace the contents of this script with following:
+3. Replace the contents of this script with following (where `SUFFIX` is your **student ID**):
 
     ```sql
     SELECT TOP 100
         *
     FROM
-        [wwi_ml].[ProductPCA]
+        [wwi_ml].[ProductPCA_SUFFIX]
     WHERE
         ProductId > 4500
     ```
@@ -183,11 +186,11 @@ In this task, you will author a T-SQL query that uses the previously trained mod
 
    ```sql
    -- Retrieve the latest hex encoded ONNX model from the table
-   DECLARE @model varbinary(max) = (SELECT Model FROM [wwi_ml].[MLModel] WHERE Id = (SELECT Top(1) max(ID) FROM [wwi_ml].[MLModel]));
+   DECLARE @model varbinary(max) = (SELECT Model FROM [wwi_ml].[MLModel_SUFFIX] WHERE Id = (SELECT Top(1) max(ID) FROM [wwi_ml].[MLModel_SUFFIX]));
 
    -- Run a prediction query
    SELECT d.*, p.*
-   FROM PREDICT(MODEL = @model, DATA = [wwi_ml].[ProductPCA] AS d) WITH (prediction real) AS p;
+   FROM PREDICT(MODEL = @model, DATA = [wwi_ml].[ProductPCA_SUFFIX] AS d) WITH (prediction real) AS p;
    ```
 
 6. Run the script and view the results, notice that the `Prediction` column is the model's prediction of the `Seasonality` property of each product.

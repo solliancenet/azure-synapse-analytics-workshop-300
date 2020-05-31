@@ -298,9 +298,9 @@ FROM
                 }
 
                 $users = [ordered]@{
-                        "CEO_$($userContext)" = @{ Valid = $false }
-                        "DataAnalystMiami_$($userContext)" = @{ Valid = $false }
-                        "DataAnalystSanDiego_$($userContext)" = @{ Valid = $false }
+                        "CEO" = @{ Valid = $false }
+                        "DataAnalystMiami" = @{ Valid = $false }
+                        "DataAnalystSanDiego" = @{ Valid = $false }
                         "asa.sql.workload01_$($userContext)" = @{ Valid = $false }
                         "asa.sql.workload02_$($userContext)" = @{ Valid = $false }
                         "odl_user_$($userContext)@msazurelabs.onmicrosoft.com" = @{ Valid = $false }
