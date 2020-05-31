@@ -185,19 +185,27 @@ If you **did not** complete Exercise 1 in lab 1, where you configure the linked 
 
     ![The Manage menu item is highlighted.](media/manage-hub.png "Manage hub")
 
-2. Open **Linked services** and create a new linked service to the Azure Cosmos DB account for the lab. Name the linked service `asacosmosdb01_SUFFIX` (where `SUFFIX` is your **student ID**) and set the **Database name** value to `CustomerProfile`.
+2. Select **Linked services** in the left-hand menu, then select **+ New** to create a new linked service.
+
+    ![The Manage hub, Linked services menu item, and New button are all highlighted.](media/new-linked-service.png "Linked services")
+
+3. In the `New linked service` dialog, select the **Azure Cosmos DB (SQL API)** linked service, then select **Continue**.
+
+    ![The Azure Cosmos DB SQL API linked service is selected.](media/select-cosmos-db-linked-service.png "New linked service")
+
+4. Name the linked service `asacosmosdb01_SUFFIX` (where `SUFFIX` is your **student ID**), select the Cosmos DB account name and then select the **CustomerProfile** `Database name` value. Select **Create** to continue.
 
     ![New Azure Cosmos DB linked service.](media/create-cosmos-db-linked-service.png "New linked service")
 
-3. Navigate to the **Data** hub.
+5. Navigate to the **Data** hub.
 
     ![The Data menu item is highlighted.](media/data-hub.png "Data hub")
 
-4. Select **+** in the toolbar, then select **Dataset** to create a new dataset.
+6. Select **+** in the toolbar, then select **Dataset** to create a new dataset.
 
     ![Create new Dataset.](media/new-dataset.png "New Dataset")
 
-5. Create a new **Azure Cosmos DB (SQL API)** dataset with the following characteristics:
+7. Create a new **Azure Cosmos DB (SQL API)** dataset with the following characteristics:
 
     - **Name**: Enter `asal400_customerprofile_cosmosdb_SUFFIX` (where `SUFFIX` is your **student ID**).
     - **Linked service**: Select the Azure Cosmos DB linked service.
@@ -205,26 +213,26 @@ If you **did not** complete Exercise 1 in lab 1, where you configure the linked 
 
     ![New Azure Cosmos DB dataset.](media/create-cosmos-db-dataset.png "New Cosmos DB dataset")
 
-6. After creating the dataset, navigate to its **Connection** tab, then select **Preview data**.
+8. After creating the dataset, navigate to its **Connection** tab, then select **Preview data**.
 
     ![The preview data button on the dataset is highlighted.](media/cosmos-dataset-preview-data-link.png "Preview data")
 
-7. Preview data queries the selected Azure Cosmos DB collection and returns a sample of the documents within. The documents are stored in JSON format and include a `userId` field, `cartId`, `preferredProducts` (an array of product IDs that may be empty), and `productReviews` (an array of written product reviews that may be empty). We will use this data in lab 2.
+9. Preview data queries the selected Azure Cosmos DB collection and returns a sample of the documents within. The documents are stored in JSON format and include a `userId` field, `cartId`, `preferredProducts` (an array of product IDs that may be empty), and `productReviews` (an array of written product reviews that may be empty). We will use this data in lab 2.
 
     ![A preview of the Azure Cosmos DB data is displayed.](media/cosmos-db-dataset-preview-data.png "Preview data")
 
-8. Select the **Schema** tab, then select **Import schema**. Synapse Analytics evaluates the JSON documents within the collection and infers the schema based on the nature of the data within. Since we are only storing one document type in this collection, you will see the inferred schema for all documents within.
+10. Select the **Schema** tab, then select **Import schema**. Synapse Analytics evaluates the JSON documents within the collection and infers the schema based on the nature of the data within. Since we are only storing one document type in this collection, you will see the inferred schema for all documents within.
 
     ![The inferred schema for the Azure Cosmos DB documents is displayed.](media/cosmos-db-dataset-schema.png "Schema")
 
-9. Create a new **Azure Data Lake Storage Gen2** dataset with the **JSON** format type with the following characteristics:
+11. Create a new **Azure Data Lake Storage Gen2** dataset with the **JSON** format type with the following characteristics:
 
     - **Name**: Enter `asal400_ecommerce_userprofiles_source_SUFFIX` (where `SUFFIX` is your **student ID**).
     - **Linked service**: Select the `asadatalakeXX` linked service that already exists.
     - **File path**: Browse to the `wwi-02/online-user-profiles-02` path.
     - **Import schema**: Select `From connection/store`.
 
-0. Select **Publish all** to save your new resources.
+12. Select **Publish all** to save your new resources.
 
     ![Publish all is highlighted.](media/publish-all-1.png "Publish all")
 

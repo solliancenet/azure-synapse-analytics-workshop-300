@@ -56,11 +56,23 @@ Our data sources for labs 1 and 2 include files stored in ADLS Gen2 and Azure Co
 
 > **Important note:** Throughout the labs, you will be asked to replace `SUFFIX` with your student ID value. This ensures unique names for any artifacts you create, in case you are sharing a Synapse Analytics workspace with others. Your student ID is the set of numbers at the end of your assigned username. For example, if your username is `odl_user_104871`, your student ID is `104871`.
 
-1. Open Synapse Analytics Studio, and then navigate to the **Manage** hub.
+1. Sign in to the Azure Portal with the provided credentials, navigate to the lab's resource group, and then open the Synapse workspace. Select **Launch Synapse Studio** in the top toolbar within the Overview blade. This will open Synapse Studio in a new browser tab. When you open Synapse Studio for the first time, select Close on the Getting Started dialog.
+
+    ![The Launch Synapse Studio link is highlighted.](media/launch-synapse-studio.png "Launch Synapse Studio")
+
+2. Within Synapse Studio, navigate to the **Manage** hub.
 
     ![The Manage menu item is highlighted.](media/manage-hub.png "Manage hub")
 
-2. Open **Linked services** and create a new linked service to the Azure Cosmos DB account for the lab. Name the linked service `asacosmosdb01_SUFFIX` (where `SUFFIX` is your **student ID**) and set the **Database name** value to `CustomerProfile`.
+3. Select **Linked services** in the left-hand menu, then select **+ New** to create a new linked service.
+
+    ![The Manage hub, Linked services menu item, and New button are all highlighted.](media/new-linked-service.png "Linked services")
+
+4. In the `New linked service` dialog, select the **Azure Cosmos DB (SQL API)** linked service, then select **Continue**.
+
+    ![The Azure Cosmos DB SQL API linked service is selected.](media/select-cosmos-db-linked-service.png "New linked service")
+
+5. Name the linked service `asacosmosdb01_SUFFIX` (where `SUFFIX` is your **student ID**), select the Cosmos DB account name and then select the **CustomerProfile** `Database name` value. Select **Create** to continue.
 
     ![New Azure Cosmos DB linked service.](media/create-cosmos-db-linked-service.png "New linked service")
 
