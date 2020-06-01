@@ -48,16 +48,16 @@ Challenges
         * **raw** (folder)
         * **sales**   (folder)
             * **2012**   (folder, name set from year extracted from DeliveryDateKey)
-            * **Q1**   (folder, quarter inferred from DelieryDateKey)
+              * **Q1**   (folder, quarter inferred from DeliveryDateKey)
                 * **InvoiceDateKey=2012-01-01**   (folder, name formatted to support filtering derived from InvoiceDateKey)
-                * **part-00007-c4fc4c0c-fb33-435b-865a-6dc61ea44d28.c000.csv**   (GUID name, splitting files over a certain size into several files, CSV extension)
+                  * **part-00007-c4fc4c0c-fb33-435b-865a-6dc61ea44d28.c000.csv**   (GUID name, splitting files over a certain size into several files, CSV extension)
             * ... additional years, quarters, days and files structured as above
 
 4. How does your folder structure support query performance for typical exploratory and analytic queries for this type of data?
 
     ANSWER:
     * Most analytic queries for sales data will be usefully be constrained by date. 
-    * Irrespective of the query engine used, if files not needed to address the query do not need to be read from disk, then a query performance improvement is the result. 
+    * Irrespective of the query engine used, if files are not needed to address the query and these do not need to be read from disk, then query performance improvement is the result. 
     * The folder structure suggested allows this type of pruning at the year, quarter and even day levels. 
     * The format used to name the day level of folder is specifically supported by most data processing tools, enabling control over the maximum size of any individual CSV file while allowing an unlimited amount of transaction data to be written per day.  
 
