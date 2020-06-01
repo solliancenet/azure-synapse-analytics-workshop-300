@@ -152,7 +152,7 @@ When you query Parquet files using Synapse SQL Serverless, you can explore the d
 
     ![The SQL on-demand connection is highlighted.](media/sql-on-demand-selected.png "SQL on-demand")
 
-5. Modify the SQL query to perform aggregates and grouping operations to better understand the data. Replace the query with the following, making sure that the file path in `OPENROWSET` matches your current file path:
+5. Modify the SQL query to perform aggregates and grouping operations to better understand the data. Replace the query with the following, making sure that the file path in `OPENROWSET` matches your current file path (replace `[asadatalakeXX]` with with the name of your Primary data lake account, as seen in the Data tab under Storage accounts (`asadatalakeXXXXXX`)):
 
     ```sql
     SELECT
@@ -162,7 +162,7 @@ When you query Parquet files using Synapse SQL Serverless, you can explore the d
         SUM(Quantity) AS [(sum) Quantity]
     FROM
         OPENROWSET(
-            BULK 'https://asadatalake01.dfs.core.windows.net/wwi-02/sale-small/Year=2017/Quarter=Q4/Month=12/Day=20171231/sale-small-20171231-snappy.parquet',
+            BULK 'https://[asadatalakeXX].dfs.core.windows.net/wwi-02/sale-small/Year=2017/Quarter=Q4/Month=12/Day=20171231/sale-small-20171231-snappy.parquet',
             FORMAT='PARQUET'
         ) AS [r] GROUP BY r.TransactionDate, r.ProductId;
     ```
@@ -239,7 +239,6 @@ root
 8. Now let's use the dataframe to perform the same grouping and aggregate query we performed with the SQL Serverless pool. Create a new cell and enter the following:
 
 ```python
-from pyspark.sql import SparkSession
 from pyspark.sql.types import *
 from pyspark.sql.functions import *
 
@@ -289,17 +288,30 @@ root
 df.createOrReplaceTempView("user_profiles")
 ```
 
-3. Create a new cell. Since we want to use SQL instead of Python, we use the `%%sql` magic to set the language of the cell to SQL. Execute the following code in the cell:
+3. Create a new cell and execute the following code:
 
 ```sql
-%%sql
-
-SELECT * FROM user_profiles LIMIT 10
+spark.sql("SELECT * FROM user_profiles LIMIT 10").show()
 ```
 
-Notice that the output shows nested data for `topProductPurchases`, which includes an array of `productId` and `itemsPurchasedLast12Months` values. You can expand the fields by clicking the right triangle in each row.
+Notice that the output shows nested data for `topProductPurchases`, which includes an array of `productId` and `itemsPurchasedLast12Months` values:
 
-![JSON nested output.](media/spark-json-output-nested.png "JSON output")
+```text
++--------------------+---------+
+| topProductPurchases|visitorId|
++--------------------+---------+
+|[[13, 3623], [5, ...|   117000|
+|[[93, 713], [19, ...|   117001|
+|[[25, 478], [15, ...|   117002|
+|[[72, 2396], [8, ...|   117003|
+|[[34, 2453], [73,...|   117004|
+|[[69, 1564], [24,...|   117005|
+|[[55, 3020], [58,...|   117006|
+|[[63, 1988], [77,...|   117007|
+|[[51, 4385], [77,...|   117008|
+|[[41, 875], [14, ...|   117009|
++--------------------+---------+
+```
 
 This makes analyzing the data a bit difficult. This is because the JSON file contents looks like the following:
 
@@ -363,7 +375,7 @@ This makes analyzing the data a bit difficult. This is because the JSON file con
 ]
 ```
 
-4. PySpark contains a special [`explode` function](https://spark.apache.org/docs/latest/api/python/pyspark.sql.html?highlight=explode#pyspark.sql.functions.explode), which returns a new row for each element of the array. This will help flatten the `topProductPurchases` column for better readability or for easier querying. Execute the following in a new cell:
+1. PySpark contains a special [`explode` function](https://spark.apache.org/docs/latest/api/python/pyspark.sql.html?highlight=explode#pyspark.sql.functions.explode), which returns a new row for each element of the array. This will help flatten the `topProductPurchases` column for better readability or for easier querying. Execute the following in a new cell:
 
 ```python
 from pyspark.sql.functions import udf, explode
@@ -463,7 +475,7 @@ However, even with their familiarity with SQL, there are some things to consider
 | Fixed line delimiter | Supports custom column and row delimiters |
 | Complex to set up in code | Reduces amount of code |
 
-WWI has heard that PolyBase is generally faster than COPY, especially when working with large data sets. 
+WWI has heard that PolyBase is generally faster than COPY, especially when working with large data sets.
 
 In this exercise, you will help WWI compare ease of setup, flexibility, and speed between these loading strategies.
 
@@ -471,7 +483,7 @@ In this exercise, you will help WWI compare ease of setup, flexibility, and spee
 
 The `Sale` table has a columnstore index to optimize for read-heavy workloads. It is also used heavily for reporting and ad-hoc queries. To achieve the fastest loading speed and minimize the impact of heavy data inserts on the `Sale` table, WWI has decided to create a staging table for loads.
 
-In this task, you will create a new staging table named `SaleHeap` in a new schema named `wwi_staging`. You will define it as a [heap](https://docs.microsoft.com/sql/relational-databases/indexes/heaps-tables-without-clustered-indexes?view=sql-server-ver15) and use round-robin distribution. When WWI finalizes their data loading pipeline, they will load the data into `SaleHeap`, then insert from the heap table into `Sale`. Although this is a two-step process, the second step of inserting the rows to the production table does not incur data movement across the distributions.
+In this task, you will create a new staging table named `SaleHeap` in a new schema named `wwi_staging`. You will define it as a [heap](https://docs.microsoft.com/sql/relational-databases/indexes/heaps-tables-without-clustered-indexes?view=sql-server-ver15) and use round-robin distribution. When WWI finalizes their data loading pipeline, they will load the data into `SaleHeap`, then insert from the heap table into `Sale`.
 
 You will also create a new `Sale` clustered columnstore table within the `wwi_staging` to compare data load speeds.
 
@@ -638,7 +650,7 @@ PolyBase requires the following elements:
     FROM [wwi_external].[Sales_SUFFIX]
     ```
 
-6. Select **Run** from the toolbar menu to execute the SQL command. It will take a few minutes to execute this command. **Take note** of how long it took to execute this query.
+6. Select **Run** from the toolbar menu to execute the SQL command. It will take a few minutes (5-6) to execute this command. **Take note** of how long it took to execute this query.
 
 7. In the query window, replace the script with the following to see how many rows were imported (replace `SUFFIX` with your **student ID**):
 
@@ -652,7 +664,7 @@ PolyBase requires the following elements:
 
 Now let's see how to perform the same load operation with the COPY statement.
 
-1. In the query window, replace the script with the following to truncate the heap table and load data using the COPY statement. Be sure to replace `<PrimaryStorage>` with the default storage account name for your workspace (replace `SUFFIX` with your **student ID**):
+1. In the query window, replace the script with the following to truncate the heap table and load data using the COPY statement. Connect to `SQLPool01` if it is not selected. Be sure to replace `<PrimaryStorage>` with the default storage account name for your workspace (replace `SUFFIX` with your **student ID**):
 
     ```sql
     TRUNCATE TABLE wwi_staging.SaleHeap_SUFFIX;
@@ -668,7 +680,7 @@ Now let's see how to perform the same load operation with the COPY statement.
     GO
     ```
 
-2. Select **Run** from the toolbar menu to execute the SQL command. It takes a few minutes to execute this command. **Take note** of how long it took to execute this query.
+2. Select **Run** from the toolbar menu to execute the SQL command. It takes a few minutes (4-5 minutes) to execute this command. **Take note** of how long it took to execute this query.
 
 3. In the query window, replace the script with the following to see how many rows were imported (replace `SUFFIX` with your **student ID**):
 
@@ -684,7 +696,7 @@ Do the number of rows match for both load operations? Which activity was fastest
 
 For both of the load operations above, we inserted data into the heap table. What if we inserted into the clustered columnstore table instead? Is there really a performance difference? Let's find out!
 
-1. In the query window, replace the script with the following to load data into the clustered columnstore `Sale` table using the COPY statement. Be sure to replace `<PrimaryStorage>` with the default storage account name for your workspace (replace `SUFFIX` with your **student ID**):
+1. In the query window, replace the script with the following to load data into the clustered columnstore `Sale` table using the COPY statement. Connect to `SQLPool01` if it is not selected. Be sure to replace `<PrimaryStorage>` with the default storage account name for your workspace (replace `SUFFIX` with your **student ID**) and DO NOT RUN this query:
 
     ```sql
     -- Replace <PrimaryStorage> with the workspace default storage account name and replace SUFFIX with your student ID.
@@ -697,17 +709,7 @@ For both of the load operations above, we inserted data into the heap table. Wha
     GO
     ```
 
-2. Select **Run** from the toolbar menu to execute the SQL command. It takes a few minutes to execute this command. **Take note** of how long it took to execute this query.
-
-3. In the query window, replace the script with the following to see how many rows were imported (replace `SUFFIX` with your **student ID**):
-
-    ```sql
-    SELECT COUNT_BIG(1) FROM wwi_staging.Sale_SUFFIX(nolock)
-    ```
-
-4. Select **Run** from the toolbar menu to execute the SQL command.
-
-What were the results? Did the load operation take more or less time writing to `Sale` table vs. the heap (`SaleHeap`) table?
+2. In the interest of time, we will not run this query during the lab. However, if you did, you would find that it takes longer to write to the `Sale` table vs. the heap (`SaleHeap`) table.
 
 In our case, the results are as follows:
 
@@ -728,7 +730,7 @@ WWI has a nightly process that ingests regional sales data from a partner analyt
 
 The data has the following fields: `Date`, `NorthAmerica`, `SouthAmerica`, `Europe`, `Africa`, and `Asia`. They must process this data and store it in Synapse Analytics.
 
-1. In the query window, replace the script with the following to create the `DailySalesCounts` table and load data using the COPY statement. Be sure to replace `<PrimaryStorage>` with the default storage account name for your workspace (replace `SUFFIX` with your **student ID**):
+1. In the query window, replace the script with the following to create the `DailySalesCounts` table and load data using the COPY statement. Connect to `SQLPool01` if it is not selected. Be sure to replace `<PrimaryStorage>` with the default storage account name for your workspace (replace `SUFFIX` with your **student ID**):
 
     ```sql
     CREATE TABLE [wwi_staging].DailySalesCounts_SUFFIX
@@ -817,7 +819,7 @@ Let's try this same operation using PolyBase.
     FROM [wwi_external].[DailySalesCounts]
     ```
 
-2. Select **Run** from the toolbar menu to execute the SQL command.
+2. Select **Run** from the toolbar menu to execute the SQL command. Connect to `SQLPool01` if it is not selected.
 
 You should see an error similar to: `Failed to execute query. Error: HdfsBridge::recordReaderFillBuffer - Unexpected error encountered filling record reader buffer: HadoopExecutionException: Too many columns in the line.`.
 
