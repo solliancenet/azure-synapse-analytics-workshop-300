@@ -248,7 +248,7 @@ If you **did not** complete Exercise 1 in lab 1, where you configure the linked 
 
     ![The new data flow link is highlighted.](media/new-data-flow-link.png "New data flow")
 
-3. In the **General** tab of the new data flow, update the **Name** to the following: `ASAL400 - Lab 2 - Write User Profile Data to ASA SUFFIX` (where `SUFFIX` is your **student ID**).
+3. In the **General** tab of the new data flow, update the **Name** to the following: `lab2_write_user_profile_data_asa_SUFFIX` (where `SUFFIX` is your **student ID**).
 
 4. Select **Add Source** on the data flow canvas.
 
@@ -304,6 +304,10 @@ If you **did not** complete Exercise 1 in lab 1, where you configure the linked 
         | visitorId | `visitorId` |
         | topProductPurchases.productId | `productId` |
         | topProductPurchases.itemsPurchasedLast12Months | `itemsPurchasedLast12Months` |
+
+    Select **+ Add mapping**, then **Fixed mapping** to add entries for each of the input columns as described in the table above.
+
+    ![The add mapping and fixed mapping menu items are highlighted.](media/data-flow-user-profiles-flatten-add-mapping.png "Add mapping")
 
     ![The flatten settings are configured as described.](media/data-flow-user-profiles-flatten-settings.png "Flatten settings")
 
@@ -436,7 +440,7 @@ If you **did not** complete Exercise 1 in lab 1, where you configure the linked 
 
     - **Output stream name**: Enter `DerivedColumnsForMerge`.
     - **Incoming stream**: Select `JoinTopProductsWithPreferredProducts`.
-    - **Columns**: Provide the following information:
+    - **Columns**: Provide the following information (select the **+** to the right of a column to add a new column beneath it):
 
         | Column | Expression | Description |
         | --- | --- | --- |
@@ -480,7 +484,7 @@ If you **did not** complete Exercise 1 in lab 1, where you configure the linked 
         | Input columns | Output columns |
         | --- | --- |
         | userId | UserId |
-        | DerivedColumnsForMerge@productId | ProductId |
+        | productId | ProductId |
         | itemsPurchasedLast12Months | ItemsPurchasedLast12Months |
         | isTopProduct | IsTopProduct |
         | isPreferredProduct | IsPreferredProduct |
@@ -521,16 +525,14 @@ In order to run the new data flow, you need to create a new pipeline and add a d
 
 7. Select the mapping data flow activity on the canvas. Select the **Settings** tab, then expand **PolyBase** and configure the following:
 
-    - **Staging linked service**: Select the `asadatalake01` linked service.
+    - **Staging linked service**: Select the `asadatalakeXXXXXXX` linked service, which is named after your data lake.
     - **Staging storage folder**: Enter `staging/userprofiles`. The `userprofiles` folder will be automatically created for you during the first pipeline run.
 
     ![The mapping data flow activity settings are configured as described.](media/pipeline-user-profiles-data-flow-settings.png "Mapping data flow activity settings")
 
-8. Select **Publish all** to save your new pipeline.
+8. Select **Publish all**, then select **Publish** again to save your new pipeline.
 
     ![Publish all is highlighted.](media/publish-all-1.png "Publish all")
-
-> **Important:** if your earlier pipeline run failed due to experiencing capacity-related issues and you were required to skip ahead to a fallback task, you will need to skip ahead again. The next task and the exercise that follows depend on your ability to successfully run your pipeline. If you cannot successfully run your pipeline, **skip ahead** to **Exercise 4b (fallback)** to see a successful outcome.
 
 ### Task 3: Trigger, monitor, and analyze the user profile data pipeline
 
@@ -546,7 +548,7 @@ In order to run the new data flow, you need to create a new pipeline and add a d
 
     ![The Monitor hub menu item is selected.](media/monitor-hub.png "Monitor hub")
 
-4. Wait for the pipeline run to successfully complete. You may need to refresh the view.
+4. Wait for the pipeline run to successfully complete (4-5 minutes). You may need to refresh the view.
 
     ![The pipeline run succeeded.](media/pipeline-user-profiles-run-complete.png "Pipeline runs")
 
@@ -554,23 +556,27 @@ In order to run the new data flow, you need to create a new pipeline and add a d
 
     ![The data flow details icon is highlighted.](media/pipeline-user-profiles-activity-runs.png "Activity runs")
 
-6. The data flow details displays the data flow steps and processing details. In our example, processing time took around 45 seconds to process and output around 15 million rows. You can see which activities took longest to complete. The cluster startup time contributed almost three minutes to the total pipeline run.
+6. The data flow details displays the data flow steps and processing details. In our example, processing time took around 47 seconds to process and output around 1 million rows. You can see which activities took longest to complete. The cluster startup time contributed around two and-a-half minutes to the total pipeline run.
 
     ![The data flow details are displayed.](media/pipeline-user-profiles-data-flow-details.png "Data flow details")
 
-7. Select the `UserTopProductPurchasesASA` sink to view its details. We can see that 15,308,766 rows were calculated with a total of 30 partitions. It took around seven seconds to stage the data in ADLS Gen2 prior to writing the data to the SQL table. The total sink processing time in our case was around 45 seconds. It is also apparent that we have a hot partition that is significantly larger than the others. If we need to squeeze extra performance out of this pipeline, we can re-evaluate data partitioning to more evenly spread the partitions to better facilitate parallel data loading and filtering. We could also experiment with disabling staging to see if there's a processing time difference. Finally, the size of the SQL Pool plays a factor in how long it takes to ingest data into the sink.
+7. Select the `UserTopProductPurchasesASA` sink to view its details. We can see that 1,622,203 rows were calculated with a total of 30 partitions. It took around seven seconds to stage the data in ADLS Gen2 prior to writing the data to the SQL table. The total sink processing time in our case was around 47 seconds. It is also apparent that we have a hot partition that is significantly larger than the others. If we need to squeeze extra performance out of this pipeline, we can re-evaluate data partitioning to more evenly spread the partitions to better facilitate parallel data loading and filtering. We could also experiment with disabling staging to see if there's a processing time difference. Finally, the size of the SQL Pool plays a factor in how long it takes to ingest data into the sink.
 
     ![The sink details are displayed.](media/pipeline-user-profiles-data-flow-sink-details.png "Sink details")
+
+> **Important:** if the pipeline run failed due to experiencing capacity-related issues, you will need to skip ahead to the fallback exercise. The next task and the exercise that follows depend on your ability to successfully run your pipeline. If you cannot successfully run your pipeline, **skip ahead** to **Exercise 3b (fallback)** to see a successful outcome.
 
 ## Exercise 3: Create Synapse Spark notebook to find top products
 
 Now that we have processed, joined, and imported the user profile data, let's analyze it in greater detail. In this exercise, you will execute code to find the top 5 products for each user, based on which ones are both preferred and top, and have the most purchases in past 12 months. Then, you will calculate the top 5 products overall.
 
+### Task 1: Find top products
+
 1. Navigate to the **Data** hub.
 
     ![The Data menu item is highlighted.](media/data-hub.png "Data hub")
 
-2. Expand the `SqlPool01` database underneath the **Databases** section. Right-click the `wwi.UserTopProductPurchases` table, then select the **Load to DataFrame** menu item under the New notebook context menu.
+2. Expand the `SqlPool01` database underneath the **Databases** section. Right-click the `wwi.UserTopProductPurchases_SUFFIX` table (where `SUFFIX` is your **student ID**), then select the **Load to DataFrame** menu item under the New notebook context menu.
 
     ![The load to DataFrame new notebook option is highlighted.](media/synapse-studio-usertopproductpurchases-new-notebook.png "New notebook")
 
@@ -676,7 +682,7 @@ You should see an output similar to the following, which displays the top five p
 print('before filter: ', topPreferredProducts.count(), ', after filter: ', top5Products.count())
 ```
 
-The output should be similar to `before filter:  9662384 , after filter:  822044`.
+The output should be similar to `before filter:  9662384 , after filter:  85020`.
 
 12. Finally, let's calculate the top five products overall, based on those that are both preferred by customers and purchased the most. To do this, execute the following in a new cell:
 
@@ -698,11 +704,11 @@ In this cell, we grouped the top five preferred products by product ID, summed u
 +---------+-----+
 |ProductId|Total|
 +---------+-----+
-|     1974|23444|
-|     3861|22368|
-|     2050|22050|
-|     1465|21892|
-|     4649|21784|
+|      347| 4523|
+|     4833| 4377|
+|     3459| 4233|
+|     4246| 4155|
+|     2486| 4135|
 +---------+-----+
 ```
 
@@ -716,11 +722,11 @@ The **Monitor** hub contains, among other things, pipeline runs. When the pipeli
 
 ![The data flow details icon is highlighted.](media/pipeline-user-profiles-activity-runs.png "Activity runs")
 
-The data flow details displays the data flow steps and processing details. In our example, processing time took around 45 seconds to process and output around 15 million rows. You can see which activities took longest to complete. The cluster startup time contributed almost three minutes to the total pipeline run.
+The data flow details displays the data flow steps and processing details. In our example, processing time took around 47 seconds to process and output around 1 million rows. You can see which activities took longest to complete. The cluster startup time contributed around two and-a-half minutes to the total pipeline run.
 
 ![The data flow details are displayed.](media/pipeline-user-profiles-data-flow-details.png "Data flow details")
 
-Here we select the `UserTopProductPurchasesASA` sink to view its details. We can see that 15,308,766 rows were calculated with a total of 30 partitions. It took around seven seconds to stage the data in ADLS Gen2 prior to writing the data to the SQL table. The total sink processing time in our case was around 45 seconds. It is also apparent that we have a hot partition that is significantly larger than the others. If we need to squeeze extra performance out of this pipeline, we can re-evaluate data partitioning to more evenly spread the partitions to better facilitate parallel data loading and filtering. We could also experiment with disabling staging to see if there's a processing time difference. Finally, the size of the SQL Pool plays a factor in how long it takes to ingest data into the sink.
+Here we select the `UserTopProductPurchasesASA` sink to view its details. We can see that 1,622,203 rows were calculated with a total of 30 partitions. It took around seven seconds to stage the data in ADLS Gen2 prior to writing the data to the SQL table. The total sink processing time in our case was around 47 seconds. It is also apparent that we have a hot partition that is significantly larger than the others. If we need to squeeze extra performance out of this pipeline, we can re-evaluate data partitioning to more evenly spread the partitions to better facilitate parallel data loading and filtering. We could also experiment with disabling staging to see if there's a processing time difference. Finally, the size of the SQL Pool plays a factor in how long it takes to ingest data into the sink.
 
 ![The sink details are displayed.](media/pipeline-user-profiles-data-flow-sink-details.png "Sink details")
 
@@ -733,7 +739,7 @@ The easiest way to create a new notebook to explore the `UserTopProductPurchases
 The notebook's language is set to `Spark (Scala)` by default. The first cell is populated with code that creates a new DataFrame from the `spark.read.sqlanalytics` method, which reads from the table in the SQL Pool. We update the cell to show the first 10 records (`df.head(10))` and to create a new temporary view named "df":
 
 ```java
-val df = spark.read.sqlanalytics("SQLPool02.wwi.UserTopProductPurchases") 
+val df = spark.read.sqlanalytics("SQLPool02.wwi.UserTopProductPurchases")
 df.head(10)
 
 df.createTempView("df")
@@ -821,7 +827,7 @@ Next, we create a new cell to compare the number of top preferred products to th
 print('before filter: ', topPreferredProducts.count(), ', after filter: ', top5Products.count())
 ```
 
-The output of this cell is: `before filter:  9662384 , after filter:  822044`.
+The output of this cell is: `before filter:  9662384 , after filter:  85020`.
 
 Finally, we calculate the top five products overall, based on those that are both preferred by customers and purchased the most:
 
@@ -845,10 +851,10 @@ This is the output of the query:
 +---------+-----+
 |ProductId|Total|
 +---------+-----+
-|     1974|23444|
-|     3861|22368|
-|     2050|22050|
-|     1465|21892|
-|     4649|21784|
+|      347| 4523|
+|     4833| 4377|
+|     3459| 4233|
+|     4246| 4155|
+|     2486| 4135|
 +---------+-----+
 ```
