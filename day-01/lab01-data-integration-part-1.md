@@ -144,7 +144,7 @@ When you query Parquet files using Synapse SQL Serverless, you can explore the d
 
 2. Select the **Linked** tab, and then expand **Storage accounts**. Expand the `asadatalakeXX` primary ADLS Gen2 account and select `wwi-02`.
 
-3. Navigate to the `sale-small/Year=2017/Quarter=Q4/Month=12/Day=20161231` folder. Right-click on the `sale-small-20171231-snappy.parquet` file, select **New SQL script**, then **Select TOP 100 rows**.
+3. Navigate to the `sale-small/Year=2017/Quarter=Q4/Month=12/Day=20171231` folder. Right-click on the `sale-small-20171231-snappy.parquet` file, select **New SQL script**, then **Select TOP 100 rows**.
 
     ![The Data hub is displayed with the options highlighted.](media/data-hub-parquet-select-rows.png "Select TOP 100 rows")
 
