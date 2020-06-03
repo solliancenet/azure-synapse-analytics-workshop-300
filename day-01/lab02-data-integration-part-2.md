@@ -177,7 +177,7 @@ In this task, you'll create datasets for the SQL tables that will serve as data 
 
     ![Publish all is highlighted.](media/publish-all-1.png "Publish all")
 
-### Task 5: OPTIONAL - Create linked service and datasets from Lab 1
+### Task 3: OPTIONAL - Create linked service and datasets from Lab 1
 
 If you **did not** complete Exercise 1 in lab 1, where you configure the linked service and create datasets, complete the steps below to create the Azure Cosmos DB linked service and two additional datasets for this lab (`asal400_ecommerce_userprofiles_source_SUFFIX` and `asal400_customerprofile_cosmosdb_SUFFIX`).
 

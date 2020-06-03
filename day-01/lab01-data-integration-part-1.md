@@ -144,7 +144,7 @@ When you query Parquet files using Synapse SQL Serverless, you can explore the d
 
 2. Select the **Linked** tab, and then expand **Storage accounts**. Expand the `asadatalakeXX` primary ADLS Gen2 account and select `wwi-02`.
 
-3. Navigate to the `sale-small/Year=2017/Quarter=Q4/Month=12/Day=20161231` folder. Right-click on the `sale-small-20171231-snappy.parquet` file, select **New SQL script**, then **Select TOP 100 rows**.
+3. Navigate to the `sale-small/Year=2017/Quarter=Q4/Month=12/Day=20171231` folder. Right-click on the `sale-small-20171231-snappy.parquet` file, select **New SQL script**, then **Select TOP 100 rows**.
 
     ![The Data hub is displayed with the options highlighted.](media/data-hub-parquet-select-rows.png "Select TOP 100 rows")
 
@@ -375,7 +375,7 @@ This makes analyzing the data a bit difficult. This is because the JSON file con
 ]
 ```
 
-1. PySpark contains a special [`explode` function](https://spark.apache.org/docs/latest/api/python/pyspark.sql.html?highlight=explode#pyspark.sql.functions.explode), which returns a new row for each element of the array. This will help flatten the `topProductPurchases` column for better readability or for easier querying. Execute the following in a new cell:
+4. PySpark contains a special [`explode` function](https://spark.apache.org/docs/latest/api/python/pyspark.sql.html?highlight=explode#pyspark.sql.functions.explode), which returns a new row for each element of the array. This will help flatten the `topProductPurchases` column for better readability or for easier querying. Execute the following in a new cell:
 
 ```python
 from pyspark.sql.functions import udf, explode
