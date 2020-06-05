@@ -120,7 +120,7 @@ Use performance optimization techniques to improve the performance of the querie
 
 Have attendees show you the following before you sign off on this challenge:
 
-* The `wwi_poc.Sales_SUFFIX`, `wwi_poc.Customer`, `wwi_poc.Date`, `wwi_poc.Product` have the correct distribution (hash for `Sales_SUFFIX` and replicated for `Customer`, `Date`, `Product`)
+* The `wwi_poc.Sales_SUFFIX`, `wwi_poc.Customer`, `wwi_poc.Date`, `wwi_poc.Product` have the correct distribution (hash for `Sales_SUFFIX` and replicated for `Customer`, `Date`, `Product`) and the correct indexing (CCI for `wwi_poc.Sales_SUFFIX`)
 * Performance optimization techniques used for the queries
 
 ### Things to watch out for
@@ -130,4 +130,54 @@ Have attendees show you the following before you sign off on this challenge:
 Sub-optimal table structures | The `wwi_poc.Sales_SUFFIX`, `wwi_poc.Customer`, `wwi_poc.Date`, `wwi_poc.Product` have suboptimal structures.
 
 
+Possible solution for table structures:
 
+```sql
+CREATE TABLE wwi_poc.Customer_NNNNNN_Optimal
+WITH
+(
+	DISTRIBUTION = REPLICATE
+)
+AS
+SELECT
+    *
+FROM
+    wwi_poc.Customer_NNNNNN
+
+
+CREATE TABLE wwi_poc.Product_NNNNNN_Optimal
+WITH
+(
+	DISTRIBUTION = REPLICATE
+)
+AS
+SELECT
+    *
+FROM
+    wwi_poc.Product_NNNNN
+
+
+CREATE TABLE wwi_poc.Date_NNNNNN_Optimal
+WITH
+(
+	DISTRIBUTION = REPLICATE
+)
+AS
+SELECT
+    *
+FROM
+    wwi_poc.Date_NNNNN
+
+
+CREATE TABLE wwi_poc.Sale_NNNNNN_Optimal
+WITH
+(
+	DISTRIBUTION = HASH (CustomerId),
+    CLUSTERED COLUMNSTORE INDEX
+)
+AS
+SELECT
+    *
+FROM
+    wwi_poc.Sale_NNNNNN
+```
