@@ -65,7 +65,6 @@ initial_types = [
 ]
 ```
 
-
 ```python
 model_onnx = convert_sparkml(lin_reg_model, 'sparkml GeneralizedLinearRegression', initial_types)
 model_onnx
@@ -86,4 +85,3 @@ block_blob_service = BlockBlobService(
  
 block_blob_service.create_blob_from_text('wwi-02', '/ml/onnx/model.onnx', model_onnx.SerializeToString())
 ```
-
