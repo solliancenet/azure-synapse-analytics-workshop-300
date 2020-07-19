@@ -1,6 +1,3 @@
-Remove-Module solliance-synapse-automation
-Import-Module ".\artifacts\environment-setup\solliance-synapse-automation"
-
 $InformationPreference = "Continue"
 
 # These need to be run only if the Az modules are not yet installed
@@ -26,27 +23,75 @@ $InformationPreference = "Continue"
 # Known issue: make sure the ODBC Driver 17 path is BEFORE ODBC Driver 13 in the PATH environment variable
 
 # TODO: Keep all required configuration in C:\LabFiles\AzureCreds.ps1 file
-. C:\LabFiles\AzureCreds.ps1
+$IsCloudLabs = Test-Path C:\LabFiles\AzureCreds.ps1;
+$iscloudlabs = $false;
 
-$global:userName = $AzureUserName                # READ FROM FILE
-$global:password = $AzurePassword                # READ FROM FILE
-$clientId = $TokenGeneratorClientId       # READ FROM FILE
-$global:sqlPassword = $AzureSQLPassword          # READ FROM FILE
+if($IsCloudLabs){
+        Remove-Module solliance-synapse-automation
+        Import-Module ".\artifacts\environment-setup\solliance-synapse-automation"
 
-$securePassword = $password | ConvertTo-SecureString -AsPlainText -Force
-$cred = new-object -typename System.Management.Automation.PSCredential -argumentlist $userName, $SecurePassword
+        . C:\LabFiles\AzureCreds.ps1
 
-Connect-AzAccount -Credential $cred | Out-Null
+        $userName = $AzureUserName                # READ FROM FILE
+        $password = $AzurePassword                # READ FROM FILE
+        $clientId = $TokenGeneratorClientId       # READ FROM FILE
+        $global:sqlPassword = $AzureSQLPassword          # READ FROM FILE
 
-$resourceGroupName = (Get-AzResourceGroup | Where-Object { $_.ResourceGroupName -like "*L400*" }).ResourceGroupName
+        $securePassword = $password | ConvertTo-SecureString -AsPlainText -Force
+        $cred = new-object -typename System.Management.Automation.PSCredential -argumentlist $userName, $SecurePassword
+        
+        Connect-AzAccount -Credential $cred | Out-Null
+
+        $ropcBodyCore = "client_id=$($clientId)&username=$($userName)&password=$($password)&grant_type=password"
+        $global:ropcBodySynapse = "$($ropcBodyCore)&scope=https://dev.azuresynapse.net/.default"
+        $global:ropcBodyManagement = "$($ropcBodyCore)&scope=https://management.azure.com/.default"
+        $global:ropcBodySynapseSQL = "$($ropcBodyCore)&scope=https://sql.azuresynapse.net/.default"
+        $global:ropcBodyPowerBI = "$($ropcBodyCore)&scope=https://analysis.windows.net/powerbi/api/.default"
+
+        $artifactsPath = ".\artifacts"
+        $templatesPath = ".\artifacts\environment-setup\templates"
+        $datasetsPath = ".\artifacts\environment-setup\datasets"
+        $dataflowsPath = ".\artifacts\environment-setup\dataflows"
+        $pipelinesPath = ".\artifacts\environment-setup\pipelines"
+        $sqlScriptsPath = ".\artifacts\environment-setup\sql"
+} else {
+        if(Get-Module -Name solliance-synapse-automation){
+                Remove-Module solliance-synapse-automation
+        }
+        Import-Module "..\solliance-synapse-automation"
+
+        #Different approach to run automation in Cloud Shell
+        $subs = Get-AzSubscription | Select-Object -ExpandProperty Name
+        if($subs.GetType().IsArray -and $subs.length -gt 1){
+                $subOptions = [System.Collections.ArrayList]::new()
+                for($subIdx=0; $subIdx -lt $subs.length; $subIdx++){
+                        $opt = New-Object System.Management.Automation.Host.ChoiceDescription "$($subs[$subIdx])", "Selects the $($subs[$subIdx]) subscription."   
+                        $subOptions.Add($opt)
+                }
+                $selectedSubIdx = $host.ui.PromptForChoice('Enter the desired Azure Subscription for this lab','Copy and paste the name of the subscription to make your choice.', $subOptions.ToArray(),0)
+                $selectedSubName = $subs[$selectedSubIdx]
+                Write-Information "Selecting the $selectedSubName subscription"
+                Select-AzSubscription -SubscriptionName $selectedSubName
+        }
+        
+        $global:sqlPassword = Read-Host -Prompt "Enter the SQL Administrator password you used in the deployment" -AsSecureString
+        $global:sqlPassword = [System.Runtime.InteropServices.Marshal]::PtrToStringUni([System.Runtime.InteropServices.Marshal]::SecureStringToCoTaskMemUnicode($sqlPassword))
+
+        $artifactsPath = "..\..\"
+        $reportsPath = "..\reports"
+        $templatesPath = "..\templates"
+        $datasetsPath = "..\datasets"
+        $dataflowsPath = "..\dataflows"
+        $pipelinesPath = "..\pipelines"
+        $sqlScriptsPath = "..\sql"
+}
+
+$userName = ((az ad signed-in-user show) | ConvertFrom-JSON).UserPrincipalName
+$resourceGroupName = (Get-AzResourceGroup | Where-Object { $_.ResourceGroupName -like "*L300*" }).ResourceGroupName
 $uniqueId =  (Get-AzResourceGroup -Name $resourceGroupName).Tags["DeploymentId"]
 $subscriptionId = (Get-AzContext).Subscription.Id
 $tenantId = (Get-AzContext).Tenant.Id
 
-$templatesPath = ".\artifacts\environment-setup\templates"
-$datasetsPath = ".\artifacts\environment-setup\datasets"
-$pipelinesPath = ".\artifacts\environment-setup\pipelines"
-$sqlScriptsPath = ".\artifacts\environment-setup\sql"
 $workspaceName = "asaworkspace$($uniqueId)"
 $cosmosDbAccountName = "asacosmosdb$($uniqueId)"
 $cosmosDbDatabase = "CustomerProfile"
@@ -62,12 +107,6 @@ $amlWorkspaceName = "amlworkspace$($uniqueId)"
 $global:sqlEndpoint = "$($workspaceName).sql.azuresynapse.net"
 $global:sqlUser = "asa.sql.admin"
 
-
-$ropcBodyCore = "client_id=$($clientId)&username=$($userName)&password=$($password)&grant_type=password"
-$global:ropcBodySynapse = "$($ropcBodyCore)&scope=https://dev.azuresynapse.net/.default"
-$global:ropcBodyManagement = "$($ropcBodyCore)&scope=https://management.azure.com/.default"
-$global:ropcBodySynapseSQL = "$($ropcBodyCore)&scope=https://sql.azuresynapse.net/.default"
-
 $global:synapseToken = ""
 $global:synapseSQLToken = ""
 $global:managementToken = ""
@@ -80,6 +119,11 @@ $global:tokenTimes = [ordered]@{
 
 $userContexts = @( $userName.Split("@")[0].Split("_")[2] )
 $userNames = @( $userName )
+
+if (!$userContexts)
+{
+   $userContexts = @($userName.Split("@")[0]);
+}
 
 if ([System.IO.File]::Exists("C:\LabFiles\AzureCreds2.ps1")) {
         
@@ -137,6 +181,7 @@ foreach ($userContext in $userContexts) {
 
         $params = @{ 
                 DATA_LAKE_ACCOUNT_NAME = $dataLakeAccountName
+                DATA_LAKE_ACCOUNT_KEY = $dataLakeAccountKey
                 USER_CONTEXT = $userContext  
         }
         $result = Execute-SQLScriptFile -SQLScriptsPath $sqlScriptsPath -WorkspaceName $workspaceName -SQLPoolName $sqlPoolName -FileName "06-create-tables-in-wwi-security-schema-user" -Parameters $params
@@ -164,6 +209,8 @@ foreach ($userContext in $userContexts) {
                 Execute-SQLScriptFile -SQLScriptsPath $sqlScriptsPath -WorkspaceName $workspaceName -SQLPoolName $sqlPoolName -FileName $script -Parameters $params
                 #Wait-ForSQLQuery -WorkspaceName $workspaceName -SQLPoolName $sqlPoolName -Label $scripts[$script] -ReferenceTime $refTime
         }
+
+        Ensure-ValidTokens
 
         Write-Information "Create linked service for SQL pool $($sqlPoolName) with user asa.sql.workload01_$($userContext)"
 
@@ -210,13 +257,14 @@ foreach ($userContext in $userContexts) {
                 Wait-ForOperation -WorkspaceName $workspaceName -OperationId $result.operationId
         }
 
+        Ensure-ValidTokens
 
         Write-Information "Creating Spark notebooks..."
 
         $notebooks = [ordered]@{
-                "Activity 05 - Model Training" = ".\artifacts\day-03"
-                "Lab 06 - Machine Learning" = ".\artifacts\day-03\lab-06-machine-learning"
-                "Lab 07 - Spark ML" = ".\artifacts\day-03\lab-07-spark-ml"
+                "Activity 05 - Model Training" = "$artifactsPath\day-03"
+                "Lab 06 - Machine Learning" = "$artifactsPath\day-03\lab-06-machine-learning"
+                "Lab 07 - Spark ML" = "$artifactsPath\day-03\lab-07-spark-ml"
         }
 
         $cellParams = [ordered]@{
@@ -229,6 +277,7 @@ foreach ($userContext in $userContexts) {
 
         foreach ($notebookName in $notebooks.Keys) {
 
+                $thistemplatesPath = "$($notebooks[$notebookName])"
                 $notebookFileName = "$($notebooks[$notebookName])\$($notebookName).ipynb"
                 $notebookName = "$($notebookName) - $($userContext)"
                 Write-Information "Creating notebook $($notebookName) from $($notebookFileName)"
@@ -242,10 +291,10 @@ foreach ($userContext in $userContexts) {
         Write-Information "Create SQL scripts for Lab 05"
 
         $sqlScripts = [ordered]@{
-                "Lab 05 - Exercise 3 - Column Level Security" = ".\artifacts\day-02\lab-05-security"
-                "Lab 05 - Exercise 3 - Dynamic Data Masking" = ".\artifacts\day-02\lab-05-security"
-                "Lab 05 - Exercise 3 - Row Level Security" = ".\artifacts\day-02\lab-05-security"
-                "Activity 03 - Data Warehouse Optimization" = ".\artifacts\day-02"
+                "Lab 05 - Exercise 3 - Column Level Security" = "$artifactsPath\day-02\lab-05-security"
+                "Lab 05 - Exercise 3 - Dynamic Data Masking" = "$artifactsPath\day-02\lab-05-security"
+                "Lab 05 - Exercise 3 - Row Level Security" = "$artifactsPath\day-02\lab-05-security"
+                "Activity 03 - Data Warehouse Optimization" = "$artifactsPath\day-02"
         }
 
         $scriptParams = [ordered]@{
@@ -254,6 +303,7 @@ foreach ($userContext in $userContexts) {
 
         foreach ($sqlScriptName in $sqlScripts.Keys) {
                 
+                $thistemplatesPath = "$($sqlScripts[$sqlScriptName])"
                 $sqlScriptFileName = "$($sqlScripts[$sqlScriptName])\$($sqlScriptName).sql"
                 $sqlScriptName = "$($sqlScriptName) - $($userContext)"
                 Write-Information "Creating SQL script $($sqlScriptName) from $($sqlScriptFileName)"
@@ -262,6 +312,8 @@ foreach ($userContext in $userContexts) {
                 $result = Wait-ForOperation -WorkspaceName $workspaceName -OperationId $result.operationId
                 $result
         }
+
+        Ensure-ValidTokens
 
         Write-Information "Create wwi_poc schema in $($sqlPoolName)"
 
@@ -313,7 +365,7 @@ foreach ($userContext in $userContexts) {
                 BLOB_STORAGE_LINKED_SERVICE_NAME = $blobStorageAccountName
                 USER_CONTEXT = $userContext
         }
-        $loadingPipelineName = "Setup - Load SQL Pool"
+        $loadingPipelineName = "Setup - Load SQL Pool (user)"
         $fileName = "import_poc_customer_data_user"
 
         Write-Information "Creating pipeline $($loadingPipelineName)"

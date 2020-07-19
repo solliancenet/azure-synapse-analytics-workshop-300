@@ -35,7 +35,7 @@ Azure Synapse Analytics (ASA) is a powerful solution that handles security for m
 
  The SQL Active Directory Admin can be a user (the default) or group (best practice so that more than one user can be provided these permissions) security principal. The principal assigned to this will have administrative permissions to the SQL Pools contained in the workspace.
 
-1. In the **Azure Portal**, open the `Synapse-L400-Workshop-XXXXX` resource group and from the list of resources open your Synapse workspace (do not launch Synapse Studio).
+1. In the **Azure Portal**, open the `Synapse-L300-Workshop-XXXXX` resource group and from the list of resources open your Synapse workspace (do not launch Synapse Studio).
 
 2. From the left menu, select **SQL Active Directory admin** and observe who is listed as a SQL Active Directory Admin. Is it a user or group?
 
@@ -55,19 +55,15 @@ Having robust Internet security is a must for every technology system. One way t
 
     ![On the Synapse Workspace screen, the + Add Client IP button is selected from the toolbar menu.](media/lab5_synapsefirewalladdclientipmenu.png)  
 
-
 > **Note**: When connecting to Synapse from your local network, certain ports need to be open. To support the functions of Synapse Studio, ensure outgoing TCP ports 80, 443, and 1143, and UDP port 53 are open.
 
-
 ## Exercise 2 - Securing the Azure Synapse Analytics workspace and managed services
-
 
 ### Task 1 - Managing secrets with Azure Key Vault
 
 When dealing with connectivity to external data sources and services, sensitive connection information such as passwords and access keys should be properly handled. It is recommended that this type of information be stored in an Azure Key Vault. Leveraging Azure Key Vault not only protects against secrets being compromised, it also serves as a central source of truth; meaning that if a secret value needs to be updated (such as when cycling access keys on a storage account), it can be changed in one place and all services consuming this key will start pulling the new value immediately. Azure Key Vault encrypts and decrypts information transparently using 256-bit AES encryption, which is FIPS 140-2 compliant.
 
-1. In the **Azure Portal**, open the `Synapse-L400-Workshop-NNNNNN` resource group and from the list of resources and select the Key vault resource.
-
+1. In the **Azure Portal**, open the `Synapse-L300-Workshop-NNNNNN` resource group and from the list of resources and select the Key vault resource.
 
 2. From the left menu, under Settings, select **Access Policies**.
 

@@ -88,7 +88,7 @@ Our data sources for labs 1 and 2 include files stored in ADLS Gen2 and Azure Co
 
 3. Create a new **Azure Cosmos DB (SQL API)** dataset with the following characteristics:
 
-    - **Name**: Enter `asal400_customerprofile_cosmosdb_SUFFIX` (where `SUFFIX` is your **student ID**).
+    - **Name**: Enter `asal300_customerprofile_cosmosdb_SUFFIX` (where `SUFFIX` is your **student ID**).
     - **Linked service**: Select the Azure Cosmos DB linked service.
     - **Collection**: Select `OnlineUserProfile01`.
 
@@ -108,7 +108,7 @@ Our data sources for labs 1 and 2 include files stored in ADLS Gen2 and Azure Co
 
 7. Create a new **Azure Data Lake Storage Gen2** dataset with the **Parquet** format type with the following characteristics:
 
-    - **Name**: Enter `asal400_sales_adlsgen2_SUFFIX` (where `SUFFIX` is your **student ID**).
+    - **Name**: Enter `asal300_sales_adlsgen2_SUFFIX` (where `SUFFIX` is your **student ID**).
     - **Linked service**: Select the `asadatalakeXX` linked service that already exists.
     - **File path**: Browse to the `wwi-02/sale-small` path.
     - **Import schema**: Select `From connection/store`.
@@ -117,7 +117,7 @@ Our data sources for labs 1 and 2 include files stored in ADLS Gen2 and Azure Co
 
 8. Create a new **Azure Data Lake Storage Gen2** dataset with the **JSON** format type with the following characteristics:
 
-    - **Name**: Enter `asal400_ecommerce_userprofiles_source_SUFFIX` (where `SUFFIX` is your **student ID**).
+    - **Name**: Enter `asal300_ecommerce_userprofiles_source_SUFFIX` (where `SUFFIX` is your **student ID**).
     - **Linked service**: Select the `asadatalakeXX` linked service that already exists.
     - **File path**: Browse to the `wwi-02/online-user-profiles-02` path.
     - **Import schema**: Select `From connection/store`.
@@ -185,7 +185,7 @@ When you query Parquet files using Synapse SQL Serverless, you can explore the d
 
     The output should be **339507246** records.
 
-    Optional: If you wish to keep this SQL script for future reference, select the Properties button, provide a descriptive name, such as `ASAL400 - Lab1 - Explore sales data`, then select **Publish all**.
+    Optional: If you wish to keep this SQL script for future reference, select the Properties button, provide a descriptive name, such as `ASAL300 - Lab1 - Explore sales data`, then select **Publish all**.
 
     ![The SQL Script properties is displayed with the new script name, and the Publish all button is highlighted.](media/rename-publish-sql-script.png "SQL Script Properties")
 

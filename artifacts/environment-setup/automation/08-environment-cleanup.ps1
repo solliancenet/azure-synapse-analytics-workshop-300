@@ -22,7 +22,7 @@ $cred = new-object -typename System.Management.Automation.PSCredential -argument
 
 Connect-AzAccount -Credential $cred | Out-Null
 
-$resourceGroupName = (Get-AzResourceGroup | Where-Object { $_.ResourceGroupName -like "*L400*" }).ResourceGroupName
+$resourceGroupName = (Get-AzResourceGroup | Where-Object { $_.ResourceGroupName -like "*L300*" }).ResourceGroupName
 $uniqueId =  (Get-AzResourceGroup -Name $resourceGroupName).Tags["DeploymentId"]
 $subscriptionId = (Get-AzContext).Subscription.Id
 $tenantId = (Get-AzContext).Tenant.Id
@@ -88,24 +88,24 @@ Write-Information "Removing workspace artifacts"
 
 $asaArtifacts = [ordered] @{
 
-        "ASAL400 - Lab 2 - Write Campaign Analytics to ASA" = "pipelines"
-        "ASAL400 - Lab 2 - Write User Profile Data to ASA" = "pipelines"
-        "ASAL400 - Copy December Sales" = "pipelines"
+        "ASAL300 - Lab 2 - Write Campaign Analytics to ASA" = "pipelines"
+        "ASAL300 - Lab 2 - Write User Profile Data to ASA" = "pipelines"
+        "ASAL300 - Copy December Sales" = "pipelines"
 }
 
 $asaArtifacts2 = [ordered]@{
 
-        "ASAL400 - Lab 2 - Write Campaign Analytics to ASA" = "dataflows"
-        "ASAL400 - Lab 2 - Write User Profile Data to ASA" = "dataflows"
-        "asal400_customerprofile_cosmosdb" = "datasets"
-        "asal400_sales_adlsgen2" = "datasets"
-        "asal400_ecommerce_userprofiles_source" = "datasets"
-        "asal400_december_sales" = "datasets"
-        "asal400_saleheap_asa" = "datasets"
-        "asal400_campaign_analytics_source" = "datasets"
-        "asal400_wwi_campaign_analytics_asa" = "datasets"
-        "asal400_wwi_userproductreviews_asa" = "datasets"
-        "asal400_wwi_usertopproductpurchases_asa" = "datasets"
+        "ASAL300 - Lab 2 - Write Campaign Analytics to ASA" = "dataflows"
+        "ASAL300 - Lab 2 - Write User Profile Data to ASA" = "dataflows"
+        "asal300_customerprofile_cosmosdb" = "datasets"
+        "asal300_sales_adlsgen2" = "datasets"
+        "asal300_ecommerce_userprofiles_source" = "datasets"
+        "asal300_december_sales" = "datasets"
+        "asal300_saleheap_asa" = "datasets"
+        "asal300_campaign_analytics_source" = "datasets"
+        "asal300_wwi_campaign_analytics_asa" = "datasets"
+        "asal300_wwi_userproductreviews_asa" = "datasets"
+        "asal300_wwi_usertopproductpurchases_asa" = "datasets"
         "asacosmosdb01" = "linkedServices"
 }
 

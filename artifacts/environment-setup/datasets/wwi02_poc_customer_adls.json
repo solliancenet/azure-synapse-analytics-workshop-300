@@ -10,7 +10,7 @@
         "typeProperties": {
             "location": {
                 "type": "AzureBlobFSLocation",
-                "fileName": "generator-customer-clean.csv",
+                "fileName": "generator-customer.csv",
                 "folderPath": "data-generators",
                 "fileSystem": "wwi-02"
             },

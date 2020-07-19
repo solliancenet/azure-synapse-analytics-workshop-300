@@ -1,6 +1,3 @@
-Remove-Module solliance-synapse-automation
-Import-Module ".\artifacts\environment-setup\solliance-synapse-automation"
-
 $InformationPreference = "Continue"
 
 # These need to be run only if the Az modules are not yet installed
@@ -10,27 +7,74 @@ $InformationPreference = "Continue"
 
 #
 # TODO: Keep all required configuration in C:\LabFiles\AzureCreds.ps1 file
-. C:\LabFiles\AzureCreds.ps1
 
-$global:userName = $AzureUserName                # READ FROM FILE
-$global:password = $AzurePassword                # READ FROM FILE
-$clientId = $TokenGeneratorClientId       # READ FROM FILE
-$global:sqlPassword = $AzureSQLPassword          # READ FROM FILE
+$IsCloudLabs = Test-Path C:\LabFiles\AzureCreds.ps1;
+$iscloudlabs = $false;
 
-$securePassword = $password | ConvertTo-SecureString -AsPlainText -Force
-$cred = new-object -typename System.Management.Automation.PSCredential -argumentlist $userName, $SecurePassword
+if($IsCloudLabs){
+        Remove-Module solliance-synapse-automation
+        Import-Module ".\artifacts\environment-setup\solliance-synapse-automation"
 
-Connect-AzAccount -Credential $cred | Out-Null
+        . C:\LabFiles\AzureCreds.ps1
 
-$resourceGroupName = (Get-AzResourceGroup | Where-Object { $_.ResourceGroupName -like "*L400*" }).ResourceGroupName
+        $userName = $AzureUserName                # READ FROM FILE
+        $password = $AzurePassword                # READ FROM FILE
+        $clientId = $TokenGeneratorClientId       # READ FROM FILE
+        $global:sqlPassword = $AzureSQLPassword          # READ FROM FILE
+
+        $securePassword = $password | ConvertTo-SecureString -AsPlainText -Force
+        $cred = new-object -typename System.Management.Automation.PSCredential -argumentlist $userName, $SecurePassword
+        
+        Connect-AzAccount -Credential $cred | Out-Null
+
+        $ropcBodyCore = "client_id=$($clientId)&username=$($userName)&password=$($password)&grant_type=password"
+        $global:ropcBodySynapse = "$($ropcBodyCore)&scope=https://dev.azuresynapse.net/.default"
+        $global:ropcBodyManagement = "$($ropcBodyCore)&scope=https://management.azure.com/.default"
+        $global:ropcBodySynapseSQL = "$($ropcBodyCore)&scope=https://sql.azuresynapse.net/.default"
+        $global:ropcBodyPowerBI = "$($ropcBodyCore)&scope=https://analysis.windows.net/powerbi/api/.default"
+
+        $templatesPath = ".\artifacts\environment-setup\templates"
+        $datasetsPath = ".\artifacts\environment-setup\datasets"
+        $dataflowsPath = ".\artifacts\environment-setup\dataflows"
+        $pipelinesPath = ".\artifacts\environment-setup\pipelines"
+        $sqlScriptsPath = ".\artifacts\environment-setup\sql"
+} else {
+        if(Get-Module -Name solliance-synapse-automation){
+                Remove-Module solliance-synapse-automation
+        }
+        Import-Module "..\solliance-synapse-automation"
+
+        #Different approach to run automation in Cloud Shell
+        $subs = Get-AzSubscription | Select-Object -ExpandProperty Name
+        if($subs.GetType().IsArray -and $subs.length -gt 1){
+                $subOptions = [System.Collections.ArrayList]::new()
+                for($subIdx=0; $subIdx -lt $subs.length; $subIdx++){
+                        $opt = New-Object System.Management.Automation.Host.ChoiceDescription "$($subs[$subIdx])", "Selects the $($subs[$subIdx]) subscription."   
+                        $subOptions.Add($opt)
+                }
+                $selectedSubIdx = $host.ui.PromptForChoice('Enter the desired Azure Subscription for this lab','Copy and paste the name of the subscription to make your choice.', $subOptions.ToArray(),0)
+                $selectedSubName = $subs[$selectedSubIdx]
+                Write-Information "Selecting the $selectedSubName subscription"
+                Select-AzSubscription -SubscriptionName $selectedSubName
+        }
+        
+        $userName = ((az ad signed-in-user show) | ConvertFrom-JSON).UserPrincipalName
+        $global:sqlPassword = Read-Host -Prompt "Enter the SQL Administrator password you used in the deployment" -AsSecureString
+        $global:sqlPassword = [System.Runtime.InteropServices.Marshal]::PtrToStringUni([System.Runtime.InteropServices.Marshal]::SecureStringToCoTaskMemUnicode($sqlPassword))
+
+        $reportsPath = "..\reports"
+        $templatesPath = "..\templates"
+        $datasetsPath = "..\datasets"
+        $dataflowsPath = "..\dataflows"
+        $pipelinesPath = "..\pipelines"
+        $sqlScriptsPath = "..\sql"
+}
+
+$resourceGroupName = (Get-AzResourceGroup | Where-Object { $_.ResourceGroupName -like "*L300*" }).ResourceGroupName
 $uniqueId =  (Get-AzResourceGroup -Name $resourceGroupName).Tags["DeploymentId"]
 $subscriptionId = (Get-AzContext).Subscription.Id
 $tenantId = (Get-AzContext).Tenant.Id
 
-$templatesPath = ".\artifacts\environment-setup\templates"
-$datasetsPath = ".\artifacts\environment-setup\datasets"
-$pipelinesPath = ".\artifacts\environment-setup\pipelines"
-$sqlScriptsPath = ".\artifacts\environment-setup\sql"
 $workspaceName = "asaworkspace$($uniqueId)"
 $cosmosDbAccountName = "asacosmosdb$($uniqueId)"
 $cosmosDbDatabase = "CustomerProfile"
@@ -46,12 +90,6 @@ $amlWorkspaceName = "amlworkspace$($uniqueId)"
 $global:sqlEndpoint = "$($workspaceName).sql.azuresynapse.net"
 $global:sqlUser = "asa.sql.admin"
 
-
-$ropcBodyCore = "client_id=$($clientId)&username=$($userName)&password=$($password)&grant_type=password"
-$global:ropcBodySynapse = "$($ropcBodyCore)&scope=https://dev.azuresynapse.net/.default"
-$global:ropcBodyManagement = "$($ropcBodyCore)&scope=https://management.azure.com/.default"
-$global:ropcBodySynapseSQL = "$($ropcBodyCore)&scope=https://sql.azuresynapse.net/.default"
-
 $global:synapseToken = ""
 $global:synapseSQLToken = ""
 $global:managementToken = ""
@@ -62,10 +100,23 @@ $global:tokenTimes = [ordered]@{
         Management = (Get-Date -Year 1)
 }
 
-Write-Information "Assign Ownership to L400 Proctors on Synapse Workspace"
+Write-Information "Assign Ownership to L300 Proctors on Synapse Workspace"
 Assign-SynapseRole -WorkspaceName $workspaceName -RoleId "6e4bf58a-b8e1-4cc3-bbf9-d73143322b78" -PrincipalId "37548b2e-e5ab-4d2b-b0da-4d812f56c30e"  # Workspace Admin
 Assign-SynapseRole -WorkspaceName $workspaceName -RoleId "7af0c69a-a548-47d6-aea3-d00e69bd83aa" -PrincipalId "37548b2e-e5ab-4d2b-b0da-4d812f56c30e"  # SQL Admin
 Assign-SynapseRole -WorkspaceName $workspaceName -RoleId "c3a6d2f1-a26f-4810-9b0f-591308d5cbf1" -PrincipalId "37548b2e-e5ab-4d2b-b0da-4d812f56c30e"  # Apache Spark Admin
+
+#add the permission to the datalake to workspace
+$id = (Get-AzADServicePrincipal -DisplayName $workspacename).id
+New-AzRoleAssignment -Objectid $id -RoleDefinitionName "Storage Blob Data Owner" -Scope "/subscriptions/$subscriptionId/resourceGroups/$resourceGroupName/providers/Microsoft.Storage/storageAccounts/$dataLakeAccountName" -ErrorAction SilentlyContinue;
+New-AzRoleAssignment -SignInName $username -RoleDefinitionName "Storage Blob Data Owner" -Scope "/subscriptions/$subscriptionId/resourceGroups/$resourceGroupName/providers/Microsoft.Storage/storageAccounts/$dataLakeAccountName" -ErrorAction SilentlyContinue;
+
+Write-Information "Setting Key Vault Access Policy"
+Set-AzKeyVaultAccessPolicy -ResourceGroupName $resourceGroupName -VaultName $keyVaultName -UserPrincipalName $userName -PermissionsToSecrets set,delete,get,list
+Set-AzKeyVaultAccessPolicy -ResourceGroupName $resourceGroupName -VaultName $keyVaultName -ObjectId $id -PermissionsToSecrets set,delete,get,list
+
+Write-Information "Create SQL-USER-ASA Key Vault Secret"
+$secretValue = ConvertTo-SecureString $sqlPassword -AsPlainText -Force
+Set-AzKeyVaultSecret -VaultName $keyVaultName -Name $keyVaultSQLUserSecretName -SecretValue $secretValue
 
 Write-Information "Create KeyVault linked service $($keyVaultName)"
 
@@ -88,6 +139,76 @@ Write-Information "Create Blob Storage linked service $($blobStorageAccountName)
 $blobStorageAccountKey = List-StorageAccountKeys -SubscriptionId $subscriptionId -ResourceGroupName $resourceGroupName -Name $blobStorageAccountName
 $result = Create-BlobStorageLinkedService -TemplatesPath $templatesPath -WorkspaceName $workspaceName -Name $blobStorageAccountName  -Key $blobStorageAccountKey
 Wait-ForOperation -WorkspaceName $workspaceName -OperationId $result.operationId
+
+$download = $true;
+
+if ($download)
+{
+        Write-Information "Copy Public Data"
+
+        Ensure-ValidTokens
+
+        $azCopyLink = Check-HttpRedirect "https://aka.ms/downloadazcopy-v10-windows"
+
+        if (!$azCopyLink)
+        {
+        $azCopyLink = "https://azcopyvnext.azureedge.net/release20200501/azcopy_windows_amd64_10.4.3.zip"
+        }
+
+        Invoke-WebRequest $azCopyLink -OutFile "azCopy.zip"
+        Expand-Archive "azCopy.zip" -DestinationPath ".\" -Force
+        $azCopyCommand = (Get-ChildItem -Path ".\" -Recurse azcopy.exe).Directory.FullName
+        $Env:Path += ";"+ $azCopyCommand
+
+        $publicDataUrl = "https://solliancepublicdata.blob.core.windows.net/"
+        $dataLakeStorageUrl = "https://"+ $dataLakeAccountName + ".dfs.core.windows.net/"
+        $dataLakeStorageBlobUrl = "https://"+ $dataLakeAccountName + ".blob.core.windows.net/"
+        $dataLakeStorageAccountKey = (Get-AzStorageAccountKey -ResourceGroupName $resourceGroupName -AccountName $dataLakeAccountName)[0].Value
+        $dataLakeContext = New-AzureStorageContext -StorageAccountName $dataLakeAccountName -StorageAccountKey $dataLakeStorageAccountKey
+        $destinationSasKey = New-AzureStorageContainerSASToken -Container "wwi-02" -Context $dataLakeContext -Permission rwdl
+
+        Write-Information "Copying single files from the public data account..."
+        $singleFiles = @{
+                parquet_query_file = "wwi-02/sale-small/Year=2010/Quarter=Q4/Month=12/Day=20101231/sale-small-20101231-snappy.parquet"
+                customer_info = "wwi-02/customer-info/customerinfo.csv"
+                campaign_analytics = "wwi-02/campaign-analytics/campaignanalytics.csv"
+                products = "wwi-02/data-generators/generator-product/generator-product.csv"
+                dates = "wwi-02/data-generators/generator-date.csv"
+                model = "wwi-02/ml/onnx-hex/product_seasonality_classifier.onnx.hex"
+        }
+
+        foreach ($singleFile in $singleFiles.Keys) {
+                $source = $publicDataUrl + $singleFiles[$singleFile]
+                $destination = $dataLakeStorageBlobUrl + $singleFiles[$singleFile] + $destinationSasKey
+                Write-Information "Copying file $($source) to $($destination)"
+                azcopy copy $source $destination 
+        }
+
+        Write-Information "Copying sample sales raw data directories from the public data account..."
+
+        $dataDirectories = @{
+                data2017 = "wwi-02/sale-small,wwi-02/sale-small/Year=2017/"
+                data2018 = "wwi-02/sale-small,wwi-02/sale-small/Year=2018/"
+                data2019 = "wwi-02/sale-small,wwi-02/sale-small/Year=2019/"
+                profile01 = "wwi-02,wwi-02/online-user-profiles-01/"
+                profile02 = "wwi-02,wwi-02/online-user-profiles-02/"
+                analytics = "wwi-02,wwi-02/campaign-analytics"
+        }
+
+        foreach ($dataDirectory in $dataDirectories.Keys) {
+                $vals = $dataDirectories[$dataDirectory].tostring().split(",");
+                $source = $publicDataUrl + $vals[1];
+                $path = $vals[0];
+                $destination = $dataLakeStorageBlobUrl + $path + $destinationSasKey
+                Write-Information "Copying directory $($source) to $($destination)"
+                azcopy copy $source $destination --recursive=true
+        }
+
+        Write-Information "Copying sample JSON data from the repository..."
+        $rawData = "./rawdata/json-data"
+        $destination = $dataLakeStorageUrl +"wwi-02/product-json" + $destinationSasKey
+        azcopy copy $rawData $destination --recursive
+}
 
 Write-Information "Start the $($sqlPoolName) SQL pool if needed."
 
@@ -156,10 +277,10 @@ Write-Information "Create tables in the [wwi_security] schema in $($sqlPoolName)
 
 $params = @{ 
         DATA_LAKE_ACCOUNT_NAME = $dataLakeAccountName  
+        DATA_LAKE_ACCOUNT_KEY = $dataLakeAccountKey
 }
 $result = Execute-SQLScriptFile -SQLScriptsPath $sqlScriptsPath -WorkspaceName $workspaceName -SQLPoolName $sqlPoolName -FileName "06-create-tables-in-wwi-security-schema" -Parameters $params
 $result
-
 
 Write-Information "Create linked service for SQL pool $($sqlPoolName) with user asa.sql.admin"
 
@@ -289,8 +410,8 @@ Write-Information "Create pipelines for Lab 08"
 
 $params = @{}
 $workloadPipelines = [ordered]@{
-        execute_business_analyst_queries = "Lab 08 - Execute Business Analyst Queries"
-        execute_data_analyst_and_ceo_queries = "Lab 08 - Execute Data Analyst and CEO Queries"
+        execute_business_analyst_queries_user = "Lab 08 - Execute Business Analyst Queries"
+        execute_data_analyst_and_ceo_queries_user = "Lab 08 - Execute Data Analyst and CEO Queries"
 }
 
 foreach ($pipeline in $workloadPipelines.Keys) {

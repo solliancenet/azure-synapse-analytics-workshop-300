@@ -22,7 +22,7 @@ $cred = new-object -typename System.Management.Automation.PSCredential -argument
 
 Connect-AzAccount -Credential $cred | Out-Null
 
-$resourceGroupName = (Get-AzResourceGroup | Where-Object { $_.ResourceGroupName -like "*L400*" }).ResourceGroupName
+$resourceGroupName = (Get-AzResourceGroup | Where-Object { $_.ResourceGroupName -like "*L300*" }).ResourceGroupName
 $uniqueId =  (Get-AzResourceGroup -Name $resourceGroupName).Tags["DeploymentId"]
 $subscriptionId = (Get-AzContext).Subscription.Id
 $tenantId = (Get-AzContext).Tenant.Id
@@ -76,51 +76,51 @@ $asaArtifacts = [ordered]@{
                 Category = "linkedServices"
                 Valid = $false
         }
-        "asal400_customerprofile_cosmosdb" = @{
+        "asal300_customerprofile_cosmosdb" = @{
                 Category = "datasets"
                 Valid = $false
         }
-        "asal400_sales_adlsgen2" = @{
+        "asal300_sales_adlsgen2" = @{
                 Category = "datasets"
                 Valid = $false
         }
-        "asal400_ecommerce_userprofiles_source" = @{
+        "asal300_ecommerce_userprofiles_source" = @{
                 Category = "datasets"
                 Valid = $false
         }
-        "asal400_december_sales" = @{
+        "asal300_december_sales" = @{
                 Category = "datasets"
                 Valid = $false
         }
-        "asal400_saleheap_asa" = @{
+        "asal300_saleheap_asa" = @{
                 Category = "datasets"
                 Valid = $false
         }
-        "asal400_campaign_analytics_source" = @{
+        "asal300_campaign_analytics_source" = @{
                 Category = "datasets"
                 Valid = $false
         }
-        "asal400_wwi_campaign_analytics_asa" = @{
+        "asal300_wwi_campaign_analytics_asa" = @{
                 Category = "datasets"
                 Valid = $false
         }
-        "asal400_wwi_userproductreviews_asa" = @{
+        "asal300_wwi_userproductreviews_asa" = @{
                 Category = "datasets"
                 Valid = $false
         }
-        "asal400_wwi_usertopproductpurchases_asa" = @{
+        "asal300_wwi_usertopproductpurchases_asa" = @{
                 Category = "datasets"
                 Valid = $false
         }
-        "ASAL400 - Copy December Sales" = @{
+        "ASAL300 - Copy December Sales" = @{
                 Category = "pipelines"
                 Valid = $false
         }
-        "ASAL400 - Lab 2 - Write Campaign Analytics to ASA" = @{
+        "ASAL300 - Lab 2 - Write Campaign Analytics to ASA" = @{
                 Category = "dataFlows"
                 Valid = $false
         }
-        "ASAL400 - Lab 2 - Write User Profile Data to ASA" = @{
+        "ASAL300 - Lab 2 - Write User Profile Data to ASA" = @{
                 Category = "dataFlows"
                 Valid = $false
         }
@@ -128,11 +128,11 @@ $asaArtifacts = [ordered]@{
 
 $asaArtifacts2 = [ordered] @{
 
-        "ASAL400 - Lab 2 - Write Campaign Analytics to ASA" = @{
+        "ASAL300 - Lab 2 - Write Campaign Analytics to ASA" = @{
                 Category = "pipelines"
                 Valid = $false
         }
-        "ASAL400 - Lab 2 - Write User Profile Data to ASA" = @{
+        "ASAL300 - Lab 2 - Write User Profile Data to ASA" = @{
                 Category = "pipelines"
                 Valid = $false
         }

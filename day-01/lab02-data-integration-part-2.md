@@ -143,7 +143,7 @@ For the remainder of this guide, the following terms will be used for various AS
 
 ### Task 2: Create user profile datasets
 
-User profile data comes from two different data sources. In lab 1, you created datasets for these sources: `asal400_ecommerce_userprofiles_source_SUFFIX` and `asal400_customerprofile_cosmosdb_SUFFIX` (*complete Task 3 below if you did not complete lab 1*). The customer profile data from an e-commerce system that provides top product purchases for each visitor of the site (customer) over the past 12 months is stored within JSON files in the data lake. User profile data containing, among other things, product preferences and product reviews is stored as JSON documents in Cosmos DB.
+User profile data comes from two different data sources. In lab 1, you created datasets for these sources: `asal300_ecommerce_userprofiles_source_SUFFIX` and `asal300_customerprofile_cosmosdb_SUFFIX` (*complete Task 3 below if you did not complete lab 1*). The customer profile data from an e-commerce system that provides top product purchases for each visitor of the site (customer) over the past 12 months is stored within JSON files in the data lake. User profile data containing, among other things, product preferences and product reviews is stored as JSON documents in Cosmos DB.
 
 In this task, you'll create datasets for the SQL tables that will serve as data sinks for data pipelines you'll create later in this lab.
 
@@ -157,7 +157,7 @@ In this task, you'll create datasets for the SQL tables that will serve as data 
 
 3. Create a new **Azure Synapse Analytics** dataset with the following characteristics:
 
-    - **Name**: Enter `asal400_wwi_userproductreviews_asa_SUFFIX` (where `SUFFIX` is your **student ID**).
+    - **Name**: Enter `asal300_wwi_userproductreviews_asa_SUFFIX` (where `SUFFIX` is your **student ID**).
     - **Linked service**: Select the `SqlPool01` service.
     - **Table name**: Select `wwi.UserProductReviews_SUFFIX` (where `SUFFIX` is your **student ID**).
     - **Import schema**: Select `From connection/store`.
@@ -166,7 +166,7 @@ In this task, you'll create datasets for the SQL tables that will serve as data 
 
 4. Create a new **Azure Synapse Analytics** dataset with the following characteristics:
 
-    - **Name**: Enter `asal400_wwi_usertopproductpurchases_asa_SUFFIX` (where `SUFFIX` is your **student ID**).
+    - **Name**: Enter `asal300_wwi_usertopproductpurchases_asa_SUFFIX` (where `SUFFIX` is your **student ID**).
     - **Linked service**: Select the `SqlPool01` service.
     - **Table name**: Select `wwi.UserTopProductPurchases_SUFFIX` (where `SUFFIX` is your **student ID**).
     - **Import schema**: Select `From connection/store`.
@@ -179,7 +179,7 @@ In this task, you'll create datasets for the SQL tables that will serve as data 
 
 ### Task 3: OPTIONAL - Create linked service and datasets from Lab 1
 
-If you **did not** complete Exercise 1 in lab 1, where you configure the linked service and create datasets, complete the steps below to create the Azure Cosmos DB linked service and two additional datasets for this lab (`asal400_ecommerce_userprofiles_source_SUFFIX` and `asal400_customerprofile_cosmosdb_SUFFIX`).
+If you **did not** complete Exercise 1 in lab 1, where you configure the linked service and create datasets, complete the steps below to create the Azure Cosmos DB linked service and two additional datasets for this lab (`asal300_ecommerce_userprofiles_source_SUFFIX` and `asal300_customerprofile_cosmosdb_SUFFIX`).
 
 1. Open Synapse Analytics Studio, and then navigate to the **Manage** hub.
 
@@ -207,7 +207,7 @@ If you **did not** complete Exercise 1 in lab 1, where you configure the linked 
 
 7. Create a new **Azure Cosmos DB (SQL API)** dataset with the following characteristics:
 
-    - **Name**: Enter `asal400_customerprofile_cosmosdb_SUFFIX` (where `SUFFIX` is your **student ID**).
+    - **Name**: Enter `asal300_customerprofile_cosmosdb_SUFFIX` (where `SUFFIX` is your **student ID**).
     - **Linked service**: Select the Azure Cosmos DB linked service.
     - **Collection**: Select `OnlineUserProfile01`.
 
@@ -227,7 +227,7 @@ If you **did not** complete Exercise 1 in lab 1, where you configure the linked 
 
 11. Create a new **Azure Data Lake Storage Gen2** dataset with the **JSON** format type with the following characteristics:
 
-    - **Name**: Enter `asal400_ecommerce_userprofiles_source_SUFFIX` (where `SUFFIX` is your **student ID**).
+    - **Name**: Enter `asal300_ecommerce_userprofiles_source_SUFFIX` (where `SUFFIX` is your **student ID**).
     - **Linked service**: Select the `asadatalakeXX` linked service that already exists.
     - **File path**: Browse to the `wwi-02/online-user-profiles-02` path.
     - **Import schema**: Select `From connection/store`.
@@ -257,7 +257,7 @@ If you **did not** complete Exercise 1 in lab 1, where you configure the linked 
 5. Under **Source settings**, configure the following:
 
     - **Output stream name**: Enter `EcommerceUserProfiles`.
-    - **Dataset**: Select `asal400_ecommerce_userprofiles_source_SUFFIX`.
+    - **Dataset**: Select `asal300_ecommerce_userprofiles_source_SUFFIX`.
 
     ![The source settings are configured as described.](media/data-flow-user-profiles-source-settings.png "Source settings")
 
@@ -339,7 +339,7 @@ If you **did not** complete Exercise 1 in lab 1, where you configure the linked 
 14. Under **Source settings**, configure the following:
 
     - **Output stream name**: Enter `UserProfiles`.
-    - **Dataset**: Select `asal400_customerprofile_cosmosdb_SUFFIX`.
+    - **Dataset**: Select `asal300_customerprofile_cosmosdb_SUFFIX`.
 
     ![The source settings are configured as described.](media/data-flow-user-profiles-source2-settings.png "Source settings")
 
@@ -463,7 +463,7 @@ If you **did not** complete Exercise 1 in lab 1, where you configure the linked 
 
     - **Output stream name**: Enter `UserTopProductPurchasesASA`.
     - **Incoming stream**: Select `DerivedColumnsForMerge`.
-    - **Dataset**: Select `asal400_wwi_usertopproductpurchases_asa_SUFFIX`, which is the UserTopProductPurchases SQL table (where `SUFFIX` is your **student ID**).
+    - **Dataset**: Select `asal300_wwi_usertopproductpurchases_asa_SUFFIX`, which is the UserTopProductPurchases SQL table (where `SUFFIX` is your **student ID**).
     - **Options**: Check `Allow schema drift` and uncheck `Validate schema`.
 
     ![The sink settings are shown.](media/data-flow-user-profiles-new-sink-settings.png "Sink settings")
@@ -511,13 +511,13 @@ In order to run the new data flow, you need to create a new pipeline and add a d
 
     ![The new pipeline context menu item is selected.](media/new-pipeline.png "New pipeline")
 
-3. In the **General** tab for the new pipeline, enter the following **Name**: `ASAL400 - Lab 2 - Write User Profile Data to ASA SUFFIX` (where `SUFFIX` is your **student ID**).
+3. In the **General** tab for the new pipeline, enter the following **Name**: `ASAL300 - Lab 2 - Write User Profile Data to ASA SUFFIX` (where `SUFFIX` is your **student ID**).
 
 4. Expand **Move & transform** within the Activities list, then drag the **Data flow** activity onto the pipeline canvas.
 
     ![Drag the data flow activity onto the pipeline canvas.](media/pipeline-campaign-analysis-drag-data-flow.png "Pipeline canvas")
 
-5. In the `Adding data flow` blade, select **Use existing data flow**, then select the `ASAL400 - Lab 2 - Write User Profile Data to ASA SUFFIX` existing data flow you created in the previous task (where `SUFFIX` is your **student ID**).
+5. In the `Adding data flow` blade, select **Use existing data flow**, then select the `ASAL300 - Lab 2 - Write User Profile Data to ASA SUFFIX` existing data flow you created in the previous task (where `SUFFIX` is your **student ID**).
 
     ![The adding data flow form is displayed with the described configuration.](media/pipeline-user-profiles-adding-data-flow.png "Adding data flow")
 

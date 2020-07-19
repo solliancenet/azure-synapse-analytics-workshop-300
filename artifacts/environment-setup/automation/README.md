@@ -50,3 +50,28 @@ $AzureSQLPassword="..."
 * Execute `.\artifacts\environment-setup\automation\01-environment-setup-user.ps1`.
 * Execute `.\artifacts\environment-setup\automation\03-environment-validate-global.ps1`.
 * Execute `.\artifacts\environment-setup\automation\03-environment-validate-user.ps1`.
+
+## Path #2 (Cloud Shell)
+
+The above script will setup the environment when using a local PowerShell environment. You can execute the following path using the Azure Cloud Shell:
+
+* Deploy the ARM template
+* Open the Cloud Shell, execute the following:
+
+```PowerShell
+git clone https://github.com/solliancenet/azure-synapse-analytics-workshop-300.git synapse-ws-L300
+```
+
+```cli
+az login
+```
+
+```PowerShell
+cd './synapse-ws-L300/artifacts/environment-setup/automation'
+```
+
+* Execute the **01-environment-setup.ps1** script by executing the following command:
+
+```PowerShell
+./01-environment-setup-global.ps1
+```

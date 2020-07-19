@@ -26,11 +26,11 @@ Lab 01 creates the following artifacts that must be deleted when cleaning up the
 Artifact Name | Artifact Type | Notes
 --- | --- | ----
 `asacosmosdb01` | Cosmos DB Linked service |
-`asal400_customerprofile_cosmosdb` | Dataset (Cosmos DB) |
-`asal400_sales_adlsgen2` | Dataset (ADLS Gen2, Parquet) |
-`asal400_ecommerce_userprofiles_source` | Dataset (ADSL Gen2, JSON) |
-`asal400_december_sales` | Dataset (ADLS Gen2, Parquet) |
-`asal400_saleheap_asa` | Dataset (Azure Synapse Analytics) |
+`asal300_customerprofile_cosmosdb` | Dataset (Cosmos DB) |
+`asal300_sales_adlsgen2` | Dataset (ADLS Gen2, Parquet) |
+`asal300_ecommerce_userprofiles_source` | Dataset (ADSL Gen2, JSON) |
+`asal300_december_sales` | Dataset (ADLS Gen2, Parquet) |
+`asal300_saleheap_asa` | Dataset (Azure Synapse Analytics) |
 `wwi_staging` | SQL pool schema |
 `wwi_external` | SQL Pool schema |
 `wwi_staging.SaleHeap` | SQL pool table |
@@ -43,7 +43,7 @@ Artifact Name | Artifact Type | Notes
 `csv_dailysales` | SQL pool external file format |
 `BigDataLoad` | SQL pool workload group |
 `HeavyLoader` | SQL pool workload classifier |
-`ASAL400 - Copy December Sales` | Pipeline |
+`ASAL300 - Copy December Sales` | Pipeline |
 
 ## Lab 02
 
@@ -65,8 +65,8 @@ Lab 02 depends on the following artifacts created by previous labs:
 
 Artifact Name | Artifact Type | Created by | Notes
 --- | --- | --- | ---
-`asal400_ecommerce_userprofiles_source` | Dataset (ADLS Gen2, JSON) | Lab 01 |
-`asal400_customerprofile_cosmosdb` | Dataset (Cosmos DB) | Lab 01 |
+`asal300_ecommerce_userprofiles_source` | Dataset (ADLS Gen2, JSON) | Lab 01 |
+`asal300_customerprofile_cosmosdb` | Dataset (Cosmos DB) | Lab 01 |
 
 > UPDATE: There is now an optional step in Lab 02 that walks users through creating these two datasets if they were unable to complete Exercise 1 in Lab 01.
 
@@ -79,14 +79,14 @@ Artifact Name | Artifact Type | Notes
 `wwi.Sale` | SQL pool table |
 `wwi.UserProductReviews` | SQL pool table |
 `wwi.UserTopProductPurchases` | SQL pool table |
-`asal400_campaign_analytics_source` | Dataset (ADLS Gen2, Delimited text) |
-`asal400_wwi_campaign_analytics_asa` | Dataset (Azure Synapse Analytics) |
-`asal400_wwi_userproductreviews_asa` | Dataset (Azure Synapse Analytics) |
-`asal400_wwi_usertopproductpurchases_asa` | Dataset (Azure Synapse Analytics) |
-`ASAL400 - Lab 2 - Write Campaign Analytics to ASA` | Data flow |
-`ASAL400 - Lab 2 - Write User Profile Data to ASA` | Data flow |
-`ASAL400 - Lab 2 - Write Campaign Analytics to ASA` | Pipeline |
-`ASAL400 - Lab 2 - Write User Profile Data to ASA` | Pipeline |
+`asal300_campaign_analytics_source` | Dataset (ADLS Gen2, Delimited text) |
+`asal300_wwi_campaign_analytics_asa` | Dataset (Azure Synapse Analytics) |
+`asal300_wwi_userproductreviews_asa` | Dataset (Azure Synapse Analytics) |
+`asal300_wwi_usertopproductpurchases_asa` | Dataset (Azure Synapse Analytics) |
+`ASAL300 - Lab 2 - Write Campaign Analytics to ASA` | Data flow |
+`ASAL300 - Lab 2 - Write User Profile Data to ASA` | Data flow |
+`ASAL300 - Lab 2 - Write Campaign Analytics to ASA` | Pipeline |
+`ASAL300 - Lab 2 - Write User Profile Data to ASA` | Pipeline |
 
 ## Lab 03
 
