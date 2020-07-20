@@ -38,7 +38,7 @@ A: Answer (C) is correct. The Monitor Hub allows you to examine the status of ru
 
 ## Audience Poll 4
 
-Q: How do users release Spark resources used by their notebook (pick only one)? 
+Q: How do users release Spark resources used by their notebook (pick only one)?
 
 A) Stop any cells running in the notebook
 
@@ -85,11 +85,11 @@ A: Answer (C) is correct. By default Azure Synapse Analytics optimizes for throu
 ## Discussion Points
 
 | Topic | Discussion Comment |
-| --- | --- | 
+| --- | --- |
 | Monitoring - SQL | You can monitor active SQL requests using the SQL requests area of the Monitor Hub. This includes details like the pool, submitter, duration, queued duration, workload group assigned, importance and the request content. |
-| Monitoring SQL - Using DMVs | Query `sys.dm_pdw_exec_sessions` to list open and closed sessions, and retrieve the count of sessions by user. Query `sys.dm_pdw_exec_requests` to retrieve query details like listing all queued, active or complete queries, finding the longest running queries and viewing the query command text. Query `sys.dm_pdw_nodes_os_performance_counters` for performance counters including memory and CPU utilization. Query `sys.dm_pdw_waits` to see which resources a request is waiting for and `sys.dm_pdw_resource_waits` to see wait information for a given query like the number of concurrency slots used and resource class assigned. Use `sys.dm_pdw_wait_stats` for historic trends analysis of waits.| 
+| Monitoring SQL - Using DMVs | Query `sys.dm_pdw_exec_sessions` to list open and closed sessions, and retrieve the count of sessions by user. Query `sys.dm_pdw_exec_requests` to retrieve query details like listing all queued, active or complete queries, finding the longest running queries and viewing the query command text. Query `sys.dm_pdw_nodes_os_performance_counters` for performance counters including memory and CPU utilization. Query `sys.dm_pdw_waits` to see which resources a request is waiting for and `sys.dm_pdw_resource_waits` to see wait information for a given query like the number of concurrency slots used and resource class assigned. Use `sys.dm_pdw_wait_stats` for historic trends analysis of waits.|
 | Monitoring - Pipeline Runs | You can monitor pipeline runs using the Monitor Hub and selecting Pipeline runs. Here you can filter pipeline runs and drill in to view the activity runs associated with the pipeline run and monitor the running of in-progress pipelines.
-| Monitoring - Spark applications | You can monitor the execution Spark applications representing the execution of notebooks and jobs within the Monitor Hub, selecting Spark applications. Selecting a Spark application to view its progress and to launch the Spark UI to examine a running Spark job and stage details, or the Spark history server to examine a completed application. |   
+| Monitoring - Spark applications | You can monitor the execution Spark applications representing the execution of notebooks and jobs within the Monitor Hub, selecting Spark applications. Selecting a Spark application to view its progress and to launch the Spark UI to examine a running Spark job and stage details, or the Spark history server to examine a completed application. |
 | Workload Classification - Load and query classification and subclassification | Loads (insert, update, delete), Query (Select). Sub classes of loads such as Data Pipeline Loads and Transformations. Sub classes of queries like ad-hoc queries, dashboard queries, cube refreshes | 
 | Workload Classification - Importance | Different importance levels assigned to workload classifications, five point scale low, below_normal, normal, above_normal, high. Requests not assigned explicit importance default to normal. Concurrent requests having same importance level are scheduled just like any other requests would be without workload classification. |
 | Workload Classification - Unclassified statements | DBCC commands, BEGIN, COMMIT and ROLLBACK TRANSACTION are not classified |

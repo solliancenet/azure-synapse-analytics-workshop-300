@@ -268,9 +268,10 @@ If you **did not** complete Exercise 1 in lab 1, where you configure the linked 
 
     ![The source options are configured as described.](media/data-flow-user-profiles-source-options.png "Source options")
 
-<!-- 7. Select **Data preview** and select **Refresh** to display the data. Select a row under the `topProductPurchases` column to see an expanded view of the array.
+    <!-- 7. Select **Data preview** and select **Refresh** to display the data. Select a row under the `topProductPurchases` column to see an expanded view of the array.
 
-    ![The data preview tab is displayed with a sample of the file contents.](media/data-flow-user-profiles-data-preview.png "Data preview") -->
+    ![The data preview tab is displayed with a sample of the file contents.](media/data-flow-user-profiles-data-preview.png "Data preview") 
+    -->
 
 7. Select the **+** to the right of the `EcommerceUserProfiles` source, then select the **Derived Column** schema modifier from the context menu.
 
@@ -517,7 +518,7 @@ In order to run the new data flow, you need to create a new pipeline and add a d
 
     ![Drag the data flow activity onto the pipeline canvas.](media/pipeline-campaign-analysis-drag-data-flow.png "Pipeline canvas")
 
-5. In the `Adding data flow` blade, select **Use existing data flow**, then select the `ASAL300 - Lab 2 - Write User Profile Data to ASA SUFFIX` existing data flow you created in the previous task (where `SUFFIX` is your **student ID**).
+5. In the `Adding data flow` blade, select **Use existing data flow**, then select the `lab2_write_user_profile_data_asa_SUFFIX` existing data flow you created in the previous task (where `SUFFIX` is your **student ID**).
 
     ![The adding data flow form is displayed with the described configuration.](media/pipeline-user-profiles-adding-data-flow.png "Adding data flow")
 

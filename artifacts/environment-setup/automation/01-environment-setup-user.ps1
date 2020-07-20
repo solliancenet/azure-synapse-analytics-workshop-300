@@ -273,6 +273,8 @@ foreach ($userContext in $userContexts) {
                 "#RESOURCE_GROUP_NAME#" = $resourceGroupName
                 "#AML_WORKSPACE_NAME#" = $amlWorkspaceName
                 "#USER_CONTEXT#" = $userContext
+                "#DATA_LAKE_ACCOUNT_NAME#" = $dataLakeAccountName
+                "#DATA_LAKE_ACCOUNT_KEY#" = $dataLakeAccountKey
         }
 
         foreach ($notebookName in $notebooks.Keys) {

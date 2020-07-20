@@ -52,7 +52,6 @@ There are some serious challenges with the source data, including:
 | Poor initial table design | There is already some data in the SQL pool in several poorly designed fact tables. The following problems are "hidden" in the structure: <br>- Sub-optimal distribution strategy<br>- Sub-optimal partitioning strategy<br>- Incorrect indexing<br>- Incorrect data types used for several fields<br><br> The purpose is to mislead attendees in (wrongly) assuming the existing data is "good to go". When this assumption is made without corrective actions, all the subsequent tasks will be impacted. |
 | Missing CR-LF in several CSV files | Some of the external CSV files are "corrupted". A misbehaving export tool has removed all CR-LF characters, literally leaving the files as huge, one-row files.<br><br>The purpose is to force advanced, high-scale data exploration and preparation. Should only work in a decent amount of time if Spark is used. They will need to realize it's not possible in the SQL world and will need to move into Spark.<br><br>The second CSV file is messed up in a sense that it's 140 MB one liner (the row delimiter has been replaced with `,`). |
 
-
 If the team does not take the time to evaluate the data before immediately importing it, they will fail. There are various skill levels involved in extracting, transforming, and loading this data.
 
 * You should look in the wwi_poc.Sale/Customer/Product/Data tables for existing data in the SQL Pool.
@@ -128,7 +127,6 @@ Have attendees show you the following before you sign off on this challenge:
 | Name | Description |
 | --- | --- |
 Sub-optimal table structures | The `wwi_poc.Sales_SUFFIX`, `wwi_poc.Customer`, `wwi_poc.Date`, `wwi_poc.Product` have suboptimal structures.
-
 
 Possible solution for table structures:
 
