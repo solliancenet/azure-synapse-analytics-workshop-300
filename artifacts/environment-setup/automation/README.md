@@ -74,4 +74,7 @@ cd './synapse-ws-L300/artifacts/environment-setup/automation'
 
 ```PowerShell
 ./01-environment-setup-global.ps1
+./01-environment-setup-user.ps1
+./03-environment-validate-global.ps1
+./03-environment-validate-user.ps1
 ```
