@@ -127,41 +127,11 @@
                             },
                             {
                                 "source": {
-                                    "name": "Address_PostalCode",
+                                    "name": "Address",
                                     "type": "String"
                                 },
                                 "sink": {
-                                    "name": "Address_PostalCode",
-                                    "type": "String"
-                                }
-                            },
-                            {
-                                "source": {
-                                    "name": "Address_Street",
-                                    "type": "String"
-                                },
-                                "sink": {
-                                    "name": "Address_Street",
-                                    "type": "String"
-                                }
-                            },
-                            {
-                                "source": {
-                                    "name": "Address_City",
-                                    "type": "String"
-                                },
-                                "sink": {
-                                    "name": "Address_City",
-                                    "type": "String"
-                                }
-                            },
-                            {
-                                "source": {
-                                    "name": "Address_Country",
-                                    "type": "String"
-                                },
-                                "sink": {
-                                    "name": "Address_Country",
+                                    "name": "Address",
                                     "type": "String"
                                 }
                             },
