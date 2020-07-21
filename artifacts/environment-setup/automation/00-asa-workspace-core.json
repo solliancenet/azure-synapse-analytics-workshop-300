@@ -46,6 +46,17 @@
   },
   "resources": [
     {
+      "type": "Microsoft.Resources/tags",
+      "name": "default",
+      "apiVersion": "2019-10-01",
+      "dependsOn": [],
+      "properties": {
+          "tags": {
+              "DeploymentId": "[parameters('uniqueSuffix')]"
+          }
+      }
+  },
+    {
       "type": "Microsoft.Storage/storageAccounts",
       "apiVersion": "2019-04-01",
       "name": "[variables('blobStorageAccountName')]",
@@ -76,10 +87,6 @@
       "dependsOn": [
         "[resourceId('Microsoft.Storage/storageAccounts', variables('blobStorageAccountName'))]"
       ],
-      "sku": {
-        "name": "Standard_LRS",
-        "tier": "Standard"
-      },
       "properties": {
         "cors": {
           "corsRules": []
@@ -116,8 +123,8 @@
       "kind": "StorageV2",
       "properties": {
         "accessTier": "Hot",
+        "isHnsEnabled": true,
         "supportsHttpsTrafficOnly": "true",
-        "isHnsEnabled": "true",
         "largeFileSharesState": "Disabled"
       },
       "resources": [
@@ -138,10 +145,6 @@
       "dependsOn": [
         "[resourceId('Microsoft.Storage/storageAccounts', variables('adlsStorageAccountName'))]"
       ],
-      "sku": {
-        "name": "Standard_LRS",
-        "tier": "Standard"
-      },
       "properties": {
         "cors": {
           "corsRules": []
@@ -158,10 +161,6 @@
       "dependsOn": [
         "[resourceId('Microsoft.Storage/storageAccounts', variables('adlsStorageAccountName'))]"
       ],
-      "sku": {
-        "name": "Standard_LRS",
-        "tier": "Standard"
-      },
       "properties": {
         "cors": {
           "corsRules": []
@@ -498,7 +497,7 @@
       ],
       "properties": {
         "resource": {
-          "throughput": 1000
+          "throughput": 10000
         }
       }
     },
@@ -513,7 +512,7 @@
       ],
       "properties": {
         "resource": {
-          "throughput": 1000
+          "throughput": 400
         }
       }
     }

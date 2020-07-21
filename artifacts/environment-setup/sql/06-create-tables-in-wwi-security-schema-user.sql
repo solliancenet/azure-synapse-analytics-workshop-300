@@ -28,9 +28,9 @@ WITH
 GO
 
 COPY INTO [wwi_security].[CustomerInfo_#USER_CONTEXT#]
-FROM 'https://#DATA_LAKE_ACCOUNT_NAME#.dfs.core.windows.net/wwi-02/customerinfo/customerinfo.csv'
+FROM 'https://#DATA_LAKE_ACCOUNT_NAME#.dfs.core.windows.net/wwi-02/security/customerinfo.csv'
 WITH (
-	CREDENTIAL = (IDENTITY = 'SHARED ACCESS SIGNATURE', SECRET = '#DATA_LAKE_ACCOUNT_KEY#'),
+	CREDENTIAL = (IDENTITY = 'Storage Account Key', SECRET = '#DATA_LAKE_ACCOUNT_KEY#'),
     FILE_TYPE = 'CSV',
     FIRSTROW = 2,
 	FIELDQUOTE='''',
@@ -63,9 +63,9 @@ WITH
 GO
 
 COPY INTO [wwi_security].[Sale_#USER_CONTEXT#]
-FROM 'https://#DATA_LAKE_ACCOUNT_NAME#.dfs.core.windows.net/wwi-02/sale-csv/wwwi-factsale.csv'
+FROM 'https://#DATA_LAKE_ACCOUNT_NAME#.dfs.core.windows.net/wwi-02/security/factsale.csv'
 WITH (
-	CREDENTIAL = (IDENTITY = 'SHARED ACCESS SIGNATURE', SECRET = '#DATA_LAKE_ACCOUNT_KEY#'),
+	CREDENTIAL = (IDENTITY = 'Storage Account Key', SECRET = '#DATA_LAKE_ACCOUNT_KEY#'),
     FILE_TYPE = 'CSV',
     FIRSTROW = 2,
 	FIELDQUOTE='''',

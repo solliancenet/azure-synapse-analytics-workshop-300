@@ -41,6 +41,10 @@ $AzureSQLPassword="..."
 
 > The `AzureSQLPassword` value is the value passed to the `sqlAdministratorLoginPassword` parameter when running the `01-asa-workspace-core.json` ARM template. You can find this value by looking at the `SQL-USER_ASA` Key Vault secret.
 
+## Run the ARM Template
+
+* Run the 00-asa-workspace-core.json template, it will take ~30 minutes to complete
+
 ## Execute setup scripts
 
 * Open PowerShell as an Administrator and change directories to the root of this repo within your local file system.
