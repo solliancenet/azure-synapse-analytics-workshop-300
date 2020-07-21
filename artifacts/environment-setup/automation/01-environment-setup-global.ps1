@@ -243,7 +243,7 @@ if ($download)
 
                 $destination = $dataLakeStorageBlobUrl + $path + $destinationSasKey
                 Write-Information "Copying directory $($source) to $($destination)"
-                & $azCopyCommand  copy $source $destination --recursive=true
+                & $azCopyCommand copy $source $destination --recursive=true
         }
 }
 
@@ -396,7 +396,7 @@ if ($download)
 
                 $destination = $dataLakeStorageBlobUrl + $path + $destinationSasKey
                 Write-Information "Copying directory $($source) to $($destination)"
-                azcopy copy $source $destination --recursive=true
+                & $azCopyCommand copy $source $destination --recursive=true
         }
 }
 
