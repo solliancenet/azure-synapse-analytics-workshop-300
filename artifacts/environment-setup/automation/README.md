@@ -78,3 +78,12 @@ cd './synapse-ws-L300/artifacts/environment-setup/automation'
 ./03-environment-validate-global.ps1
 ./03-environment-validate-user.ps1
 ```
+
+## Steps & Timing
+
+The entire script will take a little over an hour to complete.  Major steps include:
+
+* Configure Synapase resources
+* Download all data sets and files into the data lake (~15 mins)
+* Execute the setup and execute the SQL pipeline (~30 mins)
+* Execute the Cosmos DB pipeline (~25 mins)

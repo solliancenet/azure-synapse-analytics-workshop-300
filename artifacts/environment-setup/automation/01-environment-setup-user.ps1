@@ -184,6 +184,7 @@ foreach ($userContext in $userContexts) {
                 DATA_LAKE_ACCOUNT_KEY = $dataLakeAccountKey
                 USER_CONTEXT = $userContext  
         }
+        
         $result = Execute-SQLScriptFile -SQLScriptsPath $sqlScriptsPath -WorkspaceName $workspaceName -SQLPoolName $sqlPoolName -FileName "06-create-tables-in-wwi-security-schema-user" -Parameters $params
         $result
 

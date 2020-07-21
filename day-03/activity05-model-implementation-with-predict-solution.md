@@ -1,5 +1,5 @@
 ```python
-df = spark.read.load('abfss://wwi-02@asadatalake177728.dfs.core.windows.net/sale-csv/sale-csv/wwi-factsale.csv', format="csv"
+df = spark.read.load('abfss://wwi-02@asadatalake177728.dfs.core.windows.net/sale-csv/wwi-factsale.csv', format="csv"
 , header=True, sep="|"
 )
 ```

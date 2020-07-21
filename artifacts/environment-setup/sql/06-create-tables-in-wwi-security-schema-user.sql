@@ -63,7 +63,7 @@ WITH
 GO
 
 COPY INTO [wwi_security].[Sale_#USER_CONTEXT#]
-FROM 'https://#DATA_LAKE_ACCOUNT_NAME#.dfs.core.windows.net/wwi-02/sale/factsale.csv'
+FROM 'https://#DATA_LAKE_ACCOUNT_NAME#.dfs.core.windows.net/wwi-02/sale-csv/wwwi-factsale.csv'
 WITH (
 	CREDENTIAL = (IDENTITY = 'SHARED ACCESS SIGNATURE', SECRET = '#DATA_LAKE_ACCOUNT_KEY#'),
     FILE_TYPE = 'CSV',

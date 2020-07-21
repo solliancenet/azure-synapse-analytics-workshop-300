@@ -211,6 +211,7 @@ if ($download)
                 profile01 = "wwi-02,wwi-02/online-user-profiles-01/"
                 profile02 = "wwi-02,wwi-02/online-user-profiles-02/"
                 analytics = "wwi-02,wwi-02/campaign-analytics/"
+                factsale = "wwi-02,wwi-02/sale-csv/"
         }
 
         foreach ($dataDirectory in $dataDirectories.Keys) {
