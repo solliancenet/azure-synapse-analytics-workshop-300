@@ -175,6 +175,7 @@ if (System.Environment]::OSVersion.Platform -eq "Unix")
         $azCopyCommand = (Get-ChildItem -Path ".\" -Recurse azcopy).Directory.FullName
         cd $azCopyCommand
         chmod +x azcopy
+        cd ..
         $azCopyCommand += "\azcopy"
 }
 else
@@ -196,15 +197,15 @@ else
 
 $download = $true;
 
+$publicDataUrl = "https://solliancepublicdata.blob.core.windows.net/"
+$dataLakeStorageUrl = "https://"+ $dataLakeAccountName + ".dfs.core.windows.net/"
+$dataLakeStorageBlobUrl = "https://"+ $dataLakeAccountName + ".blob.core.windows.net/"
+$dataLakeStorageAccountKey = (Get-AzStorageAccountKey -ResourceGroupName $resourceGroupName -AccountName $dataLakeAccountName)[0].Value
+$dataLakeContext = New-AzureStorageContext -StorageAccountName $dataLakeAccountName -StorageAccountKey $dataLakeStorageAccountKey
+$destinationSasKey = New-AzureStorageContainerSASToken -Container "wwi-02" -Context $dataLakeContext -Permission rwdl
+
 if ($download)
 {
-        $publicDataUrl = "https://solliancepublicdata.blob.core.windows.net/"
-        $dataLakeStorageUrl = "https://"+ $dataLakeAccountName + ".dfs.core.windows.net/"
-        $dataLakeStorageBlobUrl = "https://"+ $dataLakeAccountName + ".blob.core.windows.net/"
-        $dataLakeStorageAccountKey = (Get-AzStorageAccountKey -ResourceGroupName $resourceGroupName -AccountName $dataLakeAccountName)[0].Value
-        $dataLakeContext = New-AzureStorageContext -StorageAccountName $dataLakeAccountName -StorageAccountKey $dataLakeStorageAccountKey
-        $destinationSasKey = New-AzureStorageContainerSASToken -Container "wwi-02" -Context $dataLakeContext -Permission rwdl -ExpiryTime [Datetime]::Now.addhours(2)
-
         Write-Information "Copying single files from the public data account..."
         $singleFiles = @{
                 parquet_query_file = "wwi-02/sale-small/Year=2010/Quarter=Q4/Month=12/Day=20101231/sale-small-20101231-snappy.parquet"

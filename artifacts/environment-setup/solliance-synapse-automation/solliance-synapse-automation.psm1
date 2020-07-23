@@ -833,7 +833,6 @@ function Execute-SQLQuery {
 
     $headers = @{ 
         Authorization="Bearer $($synapseSQLToken)"
-        "x-csrf-signature"="..."
     }
 
     if ($ForceReturn) {
@@ -875,9 +874,14 @@ function GetCSRF($token, $azurehost, $msTime)
 
     $rawsig = "not-before=$($start)`r`nnot-after=$($end)`r`nauthorization: $($token)`r`nhost: $($azurehost)`r`n";
 
-    $signed = CallJavascript $rawsig $token;
+    $hmacsha = New-Object System.Security.Cryptography.HMACSHA256
+    $hmacsha.key = [Text.Encoding]::ASCII.GetBytes($token)
+    $signature = $hmacsha.ComputeHash([Text.Encoding]::ASCII.GetBytes($rawsig))
+    $signature = [Convert]::ToBase64String($signature)
 
-    $sig = "$($signed); not-before=$($start); not-after=$($end); signed-headers=authorization,host"
+    #$signed = CallJavascript $rawsig $token;
+
+    $sig = "$($signature); not-before=$($start); not-after=$($end); signed-headers=authorization,host"
 
     return $sig;
 }
