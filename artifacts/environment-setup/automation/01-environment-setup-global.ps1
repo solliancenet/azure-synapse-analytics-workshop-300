@@ -41,6 +41,13 @@ if($IsCloudLabs){
         
         Connect-AzAccount -Credential $cred | Out-Null
 
+        $resourceGroupName = (Get-AzResourceGroup | Where-Object { $_.ResourceGroupName -like "*-L300" }).ResourceGroupName;
+
+        if ($resourceGroupName.Count -gt 1)
+        {
+                $resourceGroupName = $resourceGroupName[0];
+        }
+
         $ropcBodyCore = "client_id=$($clientId)&username=$($userName)&password=$($password)&grant_type=password"
         $global:ropcBodySynapse = "$($ropcBodyCore)&scope=https://dev.azuresynapse.net/.default"
         $global:ropcBodyManagement = "$($ropcBodyCore)&scope=https://management.azure.com/.default"
@@ -71,6 +78,8 @@ if($IsCloudLabs){
                 Write-Information "Selecting the $selectedSubName subscription"
                 Select-AzSubscription -SubscriptionName $selectedSubName
         }
+
+        $resourceGroupName = Read-Host "Enter the resource group name";
         
         $userName = ((az ad signed-in-user show) | ConvertFrom-JSON).UserPrincipalName
         $global:sqlPassword = Read-Host -Prompt "Enter the SQL Administrator password you used in the deployment" -AsSecureString
@@ -84,7 +93,8 @@ if($IsCloudLabs){
         $sqlScriptsPath = "..\sql"
 }
 
-$resourceGroupName = (Get-AzResourceGroup | Where-Object { $_.ResourceGroupName -like "*L300*" }).ResourceGroupName
+Write-Information "Using $resourceGroupName";
+
 $uniqueId =  (Get-AzResourceGroup -Name $resourceGroupName).Tags["DeploymentId"]
 $subscriptionId = (Get-AzContext).Subscription.Id
 $tenantId = (Get-AzContext).Tenant.Id
